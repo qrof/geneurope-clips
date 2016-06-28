@@ -21,11 +21,16 @@ if(!class_exists('WP_SCIPP_Plugin'))
         {
             // register actions
             //if( !is_admin() ) {
-                add_action('wp_enqueue_scripts', array('WP_SCIPP_Plugin', 'scipp_enqueued_assets'));
+            add_action('wp_enqueue_scripts', array('WP_SCIPP_Plugin', 'enqueued_assets'));
+            add_action( 'init',  array('WP_SCIPP_Plugin', 'rewrite_rules' ));
+            add_action( 'template_redirect', array('WP_SCIPP_Plugin', 'rewrite_templates' ));
+
+            // register filters
+            add_filter( 'query_vars', array('WP_SCIPP_Plugin', 'rewrite_add_var' ));
 
             // register shortcodes
-            add_shortcode( 'scipp_projects_map', array('WP_SCIPP_Plugin', 'scipp_projects_map_func'));
-            add_shortcode( 'scipp_projects_list', array('WP_SCIPP_Plugin', 'scipp_projects_list_func'));
+            add_shortcode( 'scipp_projects_map', array('WP_SCIPP_Plugin', 'projects_map_func'));
+            add_shortcode( 'scipp_projects_list', array('WP_SCIPP_Plugin', 'projects_list_func'));
             //}
         } // END public function __construct
 
@@ -35,7 +40,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
         public static function activate()
         {
             // refresh rewrites
-            scipp_rewrite_rules();
+            rewrite_rules();
             flush_rewrite_rules();
         } // END public static function activate
 
@@ -47,10 +52,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
             // Do nothing
         } // END public static function deactivate
 
-        static function scipp_enqueued_assets() {
+        static function enqueued_assets() {
             // include leaflet for maps
             wp_enqueue_style( 'css-leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css' );
-            //wp_enqueue_style( 'css-scipp-plugin', plugins_url( 'css/style.css', __FILE__ ) );
+            wp_enqueue_style( 'css-scipp-plugin', plugins_url( 'css/style.css', __FILE__ ) );
 
             wp_enqueue_style( 'css-datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
 
@@ -61,7 +66,9 @@ if(!class_exists('WP_SCIPP_Plugin'))
         static function get_remote_flow( $path ) {
             $data = get_transient( 'scipp_' . $path );
             if( empty( $data ) ) {
-                $response = wp_remote_get( 'http://dev.gruenanteil.net/' . $path . '.json' );
+                $scipp_options = get_option( 'scipp_options' );
+                $api_url = isset( $scipp_options['api_url'] ) ? esc_url( $scipp_options['api_url']) : '';
+                $response = wp_remote_get( $api_url . $path . '.json', array( 'decompress' => false ) );
                 if( is_wp_error( $response ) ) {
                     return array();
                 }
@@ -85,7 +92,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         // [scipp_map show_projects="true" show_events="true" only_active="true" width="100%" height="400px"]
-        public static function scipp_projects_map_func( $atts ) {
+        public static function projects_map_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
                 'width' => '100%',
@@ -136,7 +143,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         });
                     },*/
                     onEachFeature: function (feature, layer) {
-                        var popupContent = '<p><strong><a href="' + feature.properties.uri + '">' +
+                        var popupContent = '<p><strong><a href="' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
 
                         if (feature.properties && feature.properties.abstract) {
@@ -163,7 +170,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         // [scipp_projects_map width="100%" height="400px"]
-        public static function scipp_projects_list_func( $atts ) {
+        public static function projects_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
                 'width' => '100%',
@@ -201,7 +208,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                     ?>
                         <tr>
                             <td>
-                                <a href="#<?php echo $project->id; ?>"><?php echo $project->properties->name; ?></a>
+                                <a href="<?php echo $project->properties->uri; ?>"><?php echo $project->properties->name; ?></a>
                             </td>
                             <td><?php echo $project->properties->abstract; ?></td>
                             <td><?php echo ($project->properties->address ? $project->properties->address->city : "" ); ?></td>
@@ -239,27 +246,52 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return ob_get_clean();
         }
 
-        public static function scipp_rewrite_rules() {
+        public static function get_project() {
+            if ( get_query_var( 'project' ) ) {
+                $project_id = get_query_var('project');
+                if ( get_query_var( 'lang' ) ) {
+                    $lang = get_query_var('lang');
+                }
+                else
+                    $lang = "";
+
+                $path = "projects/" . $lang . "/" . $project_id;
+
+                $project = WP_SCIPP_Plugin::get_remote_flow($path);
+
+                return $project;
+            }
+            else {
+                wp_die("Project not found.");
+            }
+        }
+
+        public static function rewrite_add_var( $vars )
+        {
+            $vars[] = 'project';
+            $vars[] = 'event';
+            $vars[] = 'lang';
+            return $vars;
+        }
+
+        public static function rewrite_rules() {
             add_rewrite_rule( 'projects/([^/]+)/([^/]+)', 'index.php?project=$matches[2]&lang=$matches[1]', 'top' );
             add_rewrite_rule( 'events/([^/]+)/([^/]+)', 'index.php?event=$matches[2]&lang=$matches[1]', 'top' );
         }
 
-        public static function scipp_rewrite_templates() {
-
-            if ( get_query_var( 'project' ) && is_singular( 'project' ) ) {
+        public static function rewrite_templates() {
+            if ( get_query_var( 'project' ) ) {
                 add_filter( 'template_include', function() {
-                    return get_template_directory() . '/single-project.php';
+                    return plugin_dir_path( __FILE__ ) . 'project.php';
                 });
             }
 
-            if ( get_query_var( 'event' ) && is_singular( 'event' ) ) {
+            if ( get_query_var( 'event' ) ) {
                 add_filter( 'template_include', function() {
-                    return get_template_directory() . '/single-event.php';
+                    return plugin_dir_path( __FILE__ ) . 'event.php';
                 });
             }
         }
-
-
     } // END class WP_SCIPP_Plugin
 } // END if(!class_exists('WP_SCIPP_Plugin'))
 
@@ -269,9 +301,149 @@ if(class_exists('WP_SCIPP_Plugin'))
     register_activation_hook(__FILE__, array('WP_SCIPP_Plugin', 'activate'));
     register_deactivation_hook(__FILE__, array('WP_SCIPP_Plugin', 'deactivate'));
 
-    add_action( 'init', array('WP_SCIPP_Plugin', 'scipp_rewrite_rules' ));
-    add_action( 'template_redirect', array('WP_SCIPP_Plugin', 'scipp_rewrite_templates' ));
-
     // instantiate the plugin class
     $wp_scipp_plugin = new WP_SCIPP_Plugin();
+
 }
+
+class ScippSettingsPage
+{
+    /**
+     * Holds the values to be used in the fields callbacks
+     */
+    private $options;
+
+    /**
+     * Start up
+     */
+    public function __construct()
+    {
+        add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        add_action( 'admin_init', array( $this, 'page_init' ) );
+    }
+
+    /**
+     * Add options page
+     */
+    public function add_plugin_page()
+    {
+        // This page will be under "Settings"
+        add_options_page(
+            'Settings Admin',
+            'SCIPP Settings',
+            'manage_options',
+            'scipp-setting-admin',
+            array( $this, 'create_admin_page' )
+        );
+    }
+
+    /**
+     * Options page callback
+     */
+    public function create_admin_page()
+    {
+        // Set class property
+        $this->options = get_option( 'scipp_options' );
+        ?>
+        <div class="wrap">
+            <h2>SCIPP Settings</h2>
+            <form method="post" action="options.php">
+                <?php
+                // This prints out all hidden setting fields
+                settings_fields( 'scipp_option_group' );
+                do_settings_sections( 'scipp-setting-admin' );
+                submit_button();
+                ?>
+            </form>
+        </div>
+        <?php
+    }
+
+    /**
+     * Register and add settings
+     */
+    public function page_init()
+    {
+        register_setting(
+            'scipp_option_group', // Option group
+            'scipp_options', // Option name
+            array( $this, 'sanitize' ) // Sanitize
+        );
+
+        add_settings_section(
+            'setting_section_id', // ID
+            'SCIPP Custom Settings', // Title
+            array( $this, 'print_section_info' ), // Callback
+            'scipp-setting-admin' // Page
+        );
+
+        add_settings_field(
+            'api_url',
+            'API url',
+            array( $this, 'api_url_callback' ),
+            'scipp-setting-admin',
+            'setting_section_id'
+        );
+
+        /*
+        add_settings_field(
+            'id_number', // ID
+            'ID Number', // Title
+            array( $this, 'id_number_callback' ), // Callback
+            'scipp-setting-admin', // Page
+            'setting_section_id' // Section
+        );
+        */
+
+    }
+
+    /**
+     * Sanitize each setting field as needed
+     *
+     * @param array $input Contains all settings fields as array keys
+     */
+    public function sanitize( $input )
+    {
+        $new_input = array();
+        if( isset( $input['id_number'] ) )
+            $new_input['id_number'] = absint( $input['id_number'] );
+
+        if( isset( $input['api_url'] ) )
+            $new_input['api_url'] = esc_url_raw( $input['api_url'] );
+
+        return $new_input;
+    }
+
+    /**
+     * Print the Section text
+     */
+    public function print_section_info()
+    {
+        print 'Enter your settings below:';
+    }
+
+    /**
+     * Get the settings option array and print one of its values
+     */
+    public function id_number_callback()
+    {
+        printf(
+            '<input type="text" id="id_number" name="scipp_options[id_number]" value="%s" />',
+            isset( $this->options['id_number'] ) ? esc_attr( $this->options['id_number']) : ''
+        );
+    }
+
+    /**
+     * Get the settings option array and print one of its values
+     */
+    public function api_url_callback()
+    {
+        printf(
+            '<input type="url" id="api_url" name="scipp_options[api_url]" value="%s" class="regular-text code" />',
+            isset( $this->options['api_url'] ) ? esc_url( $this->options['api_url']) : ''
+        );
+    }
+}
+
+if( is_admin() )
+    $scipp_settings_page = new ScippSettingsPage();
