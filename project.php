@@ -21,7 +21,7 @@ $p = new WP_SCIPP_Project();
 
             <header class="entry-header">
                 <h1 class="entry-title"><?php echo $p->project->properties->name; ?></h1>
-                <div class="project-evolution"><span><?php echo $p->project->properties->evolution->name;?></span></div>
+                <div class="project-evolution"><span><?php echo isset($p->project->properties->evolution) ? $p->project->properties->evolution->name : "";?></span></div>
             </header><!-- .entry-header -->
 
             <div class="entry-content">
@@ -31,12 +31,17 @@ $p = new WP_SCIPP_Project();
                         <!-- LEFT Column -->
                         <div class="project-details-left col-md-7 col-sm-7">
                             <h3 class="project-abstract"><?php echo $p->project->properties->abstract; ?></h3>
-                            <div class="project-description"><?php echo $p->project->properties->description; ?></div>
-                            <div class="project-interactions"><?php echo $p->interactions();?></div>
-                            <div class="project-categories"><?php echo $p->categories();?></div>
-                            <div class="project-address"><?php echo $p->address();?></div>
-                            <div class="project-contacts"><?php echo $p->contacts();?></div>
-                            <div class="project-events"><?php echo $p->events();?></div>
+                            <div class="project-description row"><?php echo $p->project->properties->description; ?></div>
+                            <div class="clear"></div>
+                            <div class="project-interactions row"><?php echo $p->interactions();?></div>
+                            <div class="clear"></div>
+                            <div class="project-categories row"><?php echo $p->categories();?></div>
+                            <div class="clear"></div>
+                            <div class="project-address row"><?php echo $p->address();?></div>
+                            <div class="clear"></div>
+                            <div class="project-contacts row"><?php echo $p->contacts();?></div>
+                            <div class="clear"></div>
+                            <div class="project-events row"><?php echo $p->events();?></div>
                         </div>
                         <!-- RIGHT Column-->
                         <div class="project-details-right col-md-5 col-sm-5">
