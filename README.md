@@ -5,6 +5,8 @@ Uses:
 - leafletjs (http://leafletjs.com)
 - datatables (http://datatables.net)
 
+In order to use the plugin, you must enter API url in SCIPP Settings page. Can only use specific API based on GeoJSON format.
+
 ## Add projects map
 
 [scipp_projects_map width="100%" height="400px"]
