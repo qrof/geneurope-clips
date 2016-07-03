@@ -42,6 +42,8 @@ if(!class_exists('WP_SCIPP_Plugin'))
             // register shortcodes
             add_shortcode( 'scipp_projects_map', array('WP_SCIPP_Plugin', 'projects_map_func'));
             add_shortcode( 'scipp_projects_list', array('WP_SCIPP_Plugin', 'projects_list_func'));
+            add_shortcode( 'scipp_events_map', array('WP_SCIPP_Plugin', 'events_map_func'));
+            add_shortcode( 'scipp_events_list', array('WP_SCIPP_Plugin', 'events_list_func'));
             //}
         } // END public function __construct
 
@@ -120,19 +122,16 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return $langcode['0'];
         }
 
-        // [scipp_map show_projects="true" show_events="true" only_active="true" width="100%" height="400px"]
+        // [scipp_projects_map width="100%" height="400px"]
         public static function projects_map_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
-                'width' => '100%',
-                'show_projects' => 'true',
-                'show_events' => 'true',
-                'only_active' => 'true',
+                'width' => '100%'
             ), $atts );
 
-            if( $a['show_projects'] ) {
-                $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
-            }
+
+            $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
+
 
             if( empty( $projects ) ) {
                 return;
@@ -153,7 +152,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
                 // start the map
-                scipp_projects_map.setView(new L.LatLng(48.821,7.141),5);
+                scipp_projects_map.setView(new L.LatLng(47.626349,7.336981),4);
                 scipp_projects_map.addLayer(osm);
 
                 L.geoJson(scipp_projects, {
@@ -198,7 +197,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return ob_get_clean();
         }
 
-        // [scipp_projects_map width="100%" height="400px"]
+        // [scipp_projects_list width="100%" height="400px"]
         public static function projects_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
@@ -268,32 +267,29 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return ob_get_clean();
         }
 
-        // [scipp_map show_projects="true" show_events="true" only_active="true" width="100%" height="400px"]
-        public static function projects_map_func( $atts ) {
+        // [scipp_events_map width="100%" height="400px"]
+        public static function events_map_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
-                'width' => '100%',
-                'show_projects' => 'true',
-                'show_events' => 'true',
-                'only_active' => 'true',
+                'width' => '100%'
             ), $atts );
 
-            if( $a['show_projects'] ) {
-                $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
-            }
 
-            if( empty( $projects ) ) {
+            $events = WP_SCIPP_Plugin::get_remote_flow("events.json");
+
+
+            if( empty( $events ) ) {
                 return;
             }
 
             ob_start();
             ?>
-            <div id="projects_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
+            <div id="events_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
             <script>
-                if (scipp_projects == undefined) {
-                    var scipp_projects = <?php echo json_encode($projects); ?>;
+                if (scipp_events == undefined) {
+                    var scipp_events = <?php echo json_encode($events); ?>;
                 }
-                var scipp_projects_map = L.map('projects_map');
+                var scipp_events_map = L.map('events_map');
 
                 // create the tile layer with correct attribution
                 var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -301,10 +297,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
                 // start the map
-                scipp_projects_map.setView(new L.LatLng(48.821,7.141),5);
-                scipp_projects_map.addLayer(osm);
+                scipp_events_map.setView(new L.LatLng(47.626349,7.336981), 4);
+                scipp_events_map.addLayer(osm);
 
-                L.geoJson(scipp_projects, {
+                L.geoJson(scipp_events, {
                     style: function (feature) {
                         return {color: feature.properties.color};
                     },
@@ -320,8 +316,16 @@ if(!class_exists('WP_SCIPP_Plugin'))
                      });
                      },*/
                     onEachFeature: function (feature, layer) {
+                        var start = new Date(feature.properties.start);
+                        start = start.toLocaleDateString() + ', ' + start.toLocaleTimeString();
+
+                        var stop = new Date(feature.properties.stop);
+                        stop = stop.toLocaleDateString() + ', ' + stop.toLocaleTimeString();
+
                         var popupContent = '<p><strong><a href="' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
+
+                        popupContent += '<p>' + start + '&nbsp;-&nbsp;' + stop + '</p>';
 
                         if (feature.properties && feature.properties.abstract) {
                             popupContent += '<p>' + feature.properties.abstract + '</p>';
@@ -333,7 +337,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                      filter: function(feature, layer) {
                      return feature.properties.evolution > 0;
                      }*/
-                }).addTo(scipp_projects_map);
+                }).addTo(scipp_events_map);
                 /*
                  var overlayMaps = {
                  "Cities": cities
@@ -346,42 +350,47 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return ob_get_clean();
         }
 
-        // [scipp_projects_map width="100%" height="400px"]
-        public static function projects_list_func( $atts ) {
+        // [scipp_events_list width="100%" height="400px"]
+        public static function events_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
                 'width' => '100%',
             ), $atts );
 
-            $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
+            $events = WP_SCIPP_Plugin::get_remote_flow("events.json");
 
-            if( empty( $projects ) ) {
+            if( empty( $events ) ) {
                 return;
             }
 
             ob_start();
             ?>
-            <div id="projects_list_wrapper">
-                <table id="projects_list"  style="width: <?php echo $a['width'];?>;">
+            <div id="events_list_wrapper">
+                <table id="events_list"  style="width: <?php echo $a['width'];?>;">
                     <thead>
                     <tr>
-                        <th>Project</th>
+                        <th>When</th>
+                        <th>Event</th>
                         <th>Location</th>
                     </tr>
                     </thead>
                     <tbody>
                     <?php
-                    foreach( $projects->features as $project ) {
+                    foreach( $events->features as $event ) {
                         ?>
                         <tr>
                             <td>
-                                <span><a href="<?php echo $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
+                                <?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->start ) ); ?><br/>
+                                <?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->stop ) ); ?>
+                            </td>
+                            <td>
+                                <span><a href="<?php echo $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
                                 <br/>
-                                <span><?php echo trim($project->properties->abstract); ?></span>
+                                <span><?php echo trim($event->properties->abstract); ?></span>
                             </td>
                             <td><?php
-                                echo (!empty($project->properties->address) ? trim($project->properties->address->city) : "" );
-                                echo (!empty($project->properties->address->countryCode) ? ", " . trim($project->properties->address->countryCode) : "" );
+                                echo (isset($event->properties->address) ? trim($event->properties->address->city) : "" );
+                                echo (isset($event->properties->address->countryCode) ? ", " . trim($event->properties->address->countryCode) : "" );
                                 ?></td>
                         </tr>
                         <?php
@@ -391,8 +400,8 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 </table>
             </div>
             <script>
-                if (scipp_projects == undefined) {
-                    scipp_projects = <?php echo json_encode($projects); ?>;
+                if (scipp_events == undefined) {
+                    scipp_events = <?php echo json_encode($events); ?>;
                 }
                 jQuery(document).ready(function(){
                     /*jQuery('#projects_list').DataTable({
@@ -409,7 +418,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                      defaultContent: "Click to edit"
                      } ]
                      });*/
-                    jQuery('#projects_list').DataTable();
+                    jQuery('#events_list').DataTable();
                 });
             </script>
             <?php
@@ -554,13 +563,23 @@ if(!class_exists('WP_SCIPP_Project')){
 
             $c = "";
 
+            ob_start();
             foreach( $contactRoles as $contactRole ) {
-                $c .= "<div class=\"row cat\">
-                            <div class=\"col-xs-5\">" . $contactRole->role . "</div>
-                            <div class=\"col-xs-7\">" . $contactRole->contact->firstname . " " . $contactRole->contact->surename ."</div>
-                        </div>";
+            ?>
+                <div class="contactrole row">
+                            <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
+                            <div style="clear:both"></div>
+                            <div class="col-xs-7">
+                                <?php echo !empty($contactRole->contact->organisation) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
+                                <?php echo !empty($contactRole->contact->firstname) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>
+                                <?php echo !empty($contactRole->contact->fon) ? "<span>Phone: " . $contactRole->contact->fon  . "</span><br/>": ""; ?>
+                                <?php echo !empty($contactRole->contact->mobile) ? "<span>Mobile: " . $contactRole->contact->mobile  . "</span><br/>": ""; ?>
+                                <?php echo !empty($contactRole->contact->email) ? "<span>E-mail: <a href=\"" . antispambot( 'mailto:' . $contactRole->contact->email ) . "\">" . antispambot( $contactRole->contact->email ) . "</a></span><br/>": ""; ?>
+                            </div>
+                </div>
+            <?php
             }
-
+            $c = ob_get_clean();
             /*
              * <li class="four columns sh_member_wrapper" data-color="#f79d03"><a href="http://scipp.nl/v1/member/paul-hendriksen/" class="sh_member_link fade_anchor"><div class="member_colored_block boxed_shadow"><div class="member_colored_block_in"><div class="navicon-plus sh_member_link_icon body_bk_color"></div></div><img src=http://scipp.nl/v1/wp-content/uploads/2014/09/paul-300x275.jpg alt="" class="mb_in_img" /></div> </a><div class="sh_member_name zero_color header_font bd_headings_text_shadow"><h3 class="small fade_anchor"><a href="http://scipp.nl/v1/member/paul-hendriksen/" class="fade_anchor">Paul Hendriksen </a></h3></div><div class="sh_member_function zero_color bd_headings_text_shadow header_font">Social, Ecologic, Economic</div><div class="tiny_line"></div><div class="sh_member_email default_color"><a href="mailto:p&#97;&#117;l&#46;&#104;e&#110;drikse&#110;&#64;a&#97;rd&#101;h&#117;&#105;&#115;.&#110;&#108;">&#112;&#97;u&#108;&#46;&#104;en&#100;ri&#107;&#115;&#101;&#110;&#64;&#97;&#97;rd&#101;hui&#115;.nl </a></div><div class="clearfix"></div></li>
              */
