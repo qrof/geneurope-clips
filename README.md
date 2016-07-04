@@ -4,6 +4,7 @@ GEN Europe SCIPP Wordpress plugin
 Uses:
 - leafletjs (http://leafletjs.com)
 - datatables (http://datatables.net)
+- moment js (http://momentjs.com) + plugin for datatables (https://datatables.net/plug-ins/sorting/datetime-moment)
 
 In order to use the plugin, you must enter API url in SCIPP Settings page. Can only use specific API based on GeoJSON format.
 
