@@ -70,8 +70,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
             wp_enqueue_script('js-leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js');
             // include datatables for list
             wp_enqueue_script('js-datatables', '//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js', array( 'jquery' ) );
+            // include js moment for datetime sorting
+            wp_enqueue_script('js-moment', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js', array( 'jquery' ) );
 
-            //wp_enqueue_script('js-options', '/?scipp-options=1' );
+            wp_enqueue_script('js-datatables-moment', '//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js', array( 'jquery', 'js-moment', 'js-datatables' ) );
         }
 
         static function enqueue_assets() {
@@ -99,7 +101,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             if( empty( $data ) ) {
                 $scipp_options = get_option( 'scipp_options' );
                 $api_url = isset( $scipp_options['api_url'] ) ? esc_url( $scipp_options['api_url']) : '';
-                $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json'), ) );
+                $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json', 'Accept-Language' => get_locale()), ) );
                 if( is_wp_error( $response ) ) {
                     return array();
                 }
@@ -116,10 +118,24 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return $data;
         }
 
-        private static function detectlanguage() {
-            $langcode = explode(";", $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            $langcode = explode(",", $langcode['0']);
-            return $langcode['0'];
+        public static function get_event_fromurl() {
+            if ( get_query_var( 'scipp-event' ) ) {
+                $event_id = get_query_var('scipp-event');
+                if ( get_query_var( 'scipp-lang' ) ) {
+                    $lang = get_query_var('scipp-lang');
+                }
+                else
+                    $lang = "";
+
+                $path = "events/" . $lang . "/" . $event_id . ".json";
+
+                $event = WP_SCIPP_Plugin::get_remote_flow($path);
+
+                return $event;
+            }
+            else {
+                wp_die("Event not found.");
+            }
         }
 
         // [scipp_projects_map width="100%" height="400px"]
@@ -379,10 +395,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                     foreach( $events->features as $event ) {
                         ?>
                         <tr>
-                            <td>
-                                <?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->start ) ); ?><br/>
-                                <?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->stop ) ); ?>
-                            </td>
+                            <td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->start ) ); ?></td>
                             <td>
                                 <span><a href="<?php echo $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
                                 <br/>
@@ -418,6 +431,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                      defaultContent: "Click to edit"
                      } ]
                      });*/
+                    jQuery.fn.dataTable.moment( '<?php echo get_option( 'date_format' ); ?>' );
                     jQuery('#events_list').DataTable();
                 });
             </script>
@@ -496,10 +510,10 @@ if(!class_exists('WP_SCIPP_Project')){
          */
         public function __construct()
         {
-            $this->project = self::get_project();
+            $this->project = self::get_project_fromurl();
         }
 
-        private function get_project() {
+        private function get_project_fromurl() {
             if ( get_query_var( 'scipp-project' ) ) {
                 $project_id = get_query_var('scipp-project');
                 if ( get_query_var( 'scipp-lang' ) ) {
@@ -558,7 +572,7 @@ if(!class_exists('WP_SCIPP_Project')){
             return $c;
         }
 
-        public function contacts() {
+/**/        public function contacts() {
             $contactRoles = $this->project->properties->contactRoles;
 
             $c = "";
