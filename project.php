@@ -25,7 +25,6 @@ $p = new WP_SCIPP_Project();
             </header><!-- .entry-header -->
 
             <div class="entry-content">
-                <?php the_content(); ?>
                 <div id="project-details" class="container">
                     <div class="row">
                         <!-- LEFT Column -->
