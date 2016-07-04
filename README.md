@@ -7,6 +7,8 @@ Uses:
 
 In order to use the plugin, you must enter API url in SCIPP Settings page. Can only use specific API based on GeoJSON format.
 
+When adding the shortcodes, be careful not to wrap them in PRE html tags (when using Visual view; check Text view that they are not present)
+
 ## Add projects map
 
 [scipp_projects_map width="100%" height="400px"]
