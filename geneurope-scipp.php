@@ -84,15 +84,33 @@ if(!class_exists('WP_SCIPP_Plugin'))
             wp_enqueue_style( 'css-datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
         }
 
-        public static function get_categories(){
+        private static function get_categories(){
             return WP_SCIPP_Plugin::get_remote_flow("admin/categories");
         }
 
-        public static function get_interactions(){
+        public static function get_category( $id ){
+            $categories = WP_SCIPP_Plugin::get_categories();
+            foreach ($categories as $category){
+                if ( $category->id == $id ){
+                    return $category;
+                }
+            }
+        }
+
+        private static function get_interactions(){
             return WP_SCIPP_Plugin::get_remote_flow("admin/interactions");
         }
 
-        public static function get_evolutions(){
+        public static function get_interaction( $id ){
+            $interactions = WP_SCIPP_Plugin::get_interactions();
+            foreach ($interactions as $interaction){
+                if ( $interaction->id == $id ){
+                    return $interaction;
+                }
+            }
+        }
+
+        private static function get_evolutions(){
             return WP_SCIPP_Plugin::get_remote_flow("admin/evolutions");
         }
 
