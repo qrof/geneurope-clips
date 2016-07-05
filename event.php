@@ -14,14 +14,14 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
     <main id="main" class="site-main" role="main">
 
         <?php
-        if ( isset( $e ) && isset( $e->id )) {
+        if ( !empty( $e ) && !empty( $e->id )) {
 
             ?>
             <article id="post-<?php echo $e->id; ?>" <?php post_class("event", null); ?>>
                 <header class="entry-header">
                     <h1 class="entry-title"><?php echo $e->properties->name; ?></h1>
                     <?php
-                    if (isset($e->properties->evolution)) {
+                    if (!empty($e->properties->evolution)) {
                         ?>
                     <div class="event-evolution">
                         <span><?php echo $e->properties->evolution->name; ?></span>
@@ -37,26 +37,26 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                             <!-- LEFT Column -->
                             <div class="event-details-left col-md-7 col-sm-7">
                                 <?php
-                                    if (isset($e->properties->start)) {
+                                    if (!empty($e->properties->start)) {
                                         ?>
                                         <div class="event-openingtimes"><p><?php
                                         echo date_i18n( get_option( 'date_format' ), strtotime( $e->properties->start ) );
 
-                                        if (isset($e->properties->stop)) {
+                                        if (!empty($e->properties->stop)) {
                                             echo "&nbsp;-&nbsp;" . date_i18n(get_option('date_format'), strtotime($e->properties->stop));
                                         }
                                                 ?></p>
                                         </div><?php
                                     }
 
-                                    if (isset($e->properties->abstract)) {
+                                    if (!empty($e->properties->abstract)) {
                                         ?>
                                         <div class="clear"></div>
                                         <div class="event-abstract"><p>
                                         <?php echo $e->properties->abstract; ?>
                                         </p></div><?php
                                     }
-                                    if (isset($e->properties->description)) {
+                                    if (!empty($e->properties->description)) {
                                         ?><div class="clear"></div>
                                     <div class="event-description row">
                                         <?php echo $e->properties->description; ?>
@@ -176,8 +176,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 </div>
                                 <?php
                                 }
-                                ?>
-                                <?php
+
                                 if ( !empty($e->properties->thumbnail) ) {
                                     ?>
                                     <div class="col-r-1"><img class="event-image" src="<?php echo $e->properties->thumbnail; ?>"/></div>
