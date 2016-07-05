@@ -100,7 +100,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             $data = get_transient( 'scipp_' . $path );
             if( empty( $data ) ) {
                 $scipp_options = get_option( 'scipp_options' );
-                $api_url = isset( $scipp_options['api_url'] ) ? esc_url( $scipp_options['api_url']) : '';
+                $api_url = !empty( $scipp_options['api_url'] ) ? esc_url( $scipp_options['api_url']) : '';
                 $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json', 'Accept-Language' => get_locale()), ) );
                 if( is_wp_error( $response ) ) {
                     return array();
@@ -135,6 +135,26 @@ if(!class_exists('WP_SCIPP_Plugin'))
             }
             else {
                 wp_die("Event not found.");
+            }
+        }
+
+        public static function get_project_fromurl() {
+            if ( get_query_var( 'scipp-project' ) ) {
+                $project_id = get_query_var('scipp-project');
+                if ( get_query_var( 'scipp-lang' ) ) {
+                    $lang = get_query_var('scipp-lang');
+                }
+                else
+                    $lang = "";
+
+                $path = "projects/" . $lang . "/" . $project_id . ".json";
+
+                $project = WP_SCIPP_Plugin::get_remote_flow($path);
+
+                return $project;
+            }
+            else {
+                wp_die("Project not found.");
             }
         }
 
@@ -402,8 +422,8 @@ if(!class_exists('WP_SCIPP_Plugin'))
                                 <span><?php echo trim($event->properties->abstract); ?></span>
                             </td>
                             <td><?php
-                                echo (isset($event->properties->address) ? trim($event->properties->address->city) : "" );
-                                echo (isset($event->properties->address->countryCode) ? ", " . trim($event->properties->address->countryCode) : "" );
+                                echo (!empty($event->properties->address) ? trim($event->properties->address->city) : "" );
+                                echo (!empty($event->properties->address->countryCode) ? ", " . trim($event->properties->address->countryCode) : "" );
                                 ?></td>
                         </tr>
                         <?php
@@ -500,150 +520,5 @@ if(class_exists('WP_SCIPP_Plugin'))
 
     // instantiate the plugin class
     $wp_scipp_plugin = new WP_SCIPP_Plugin();
-}
-
-if(!class_exists('WP_SCIPP_Project')){
-    class WP_SCIPP_Project{
-        public $project;
-        /**
-         * Construct the object
-         */
-        public function __construct()
-        {
-            $this->project = self::get_project_fromurl();
-        }
-
-        private function get_project_fromurl() {
-            if ( get_query_var( 'scipp-project' ) ) {
-                $project_id = get_query_var('scipp-project');
-                if ( get_query_var( 'scipp-lang' ) ) {
-                    $lang = get_query_var('scipp-lang');
-                }
-                else
-                    $lang = "";
-
-                $path = "projects/" . $lang . "/" . $project_id . ".json";
-
-                $project = WP_SCIPP_Plugin::get_remote_flow($path);
-
-                return $project;
-            }
-            else {
-                wp_die("Project not found.");
-            }
-        }
-
-        public function interactions()
-        {
-            $interactions = $this->project->properties->interactions;
-
-            $i = "";
-
-            foreach( $interactions as $interaction ) {
-                    $i .= "<span>" . $interaction->name . "</span>, ";
-
-            }
-
-            if (!empty($i)){
-                $i = rtrim($i, ", ");
-                return "<h4 class=\"project-interactions-title\">Interactions</h4>" . $i;
-            }
-
-            return $i;
-        }
-
-        public function categories()
-        {
-            $cat_codes = $this->project->properties->cat_codes;
-
-            $c = "";
-
-            foreach( WP_SCIPP_Plugin::get_categories() as $category ) {
-                if ( in_array($category->id, $cat_codes) ) {
-                    $c .= "<span>" . $category->name . "</span>, ";
-                }
-            }
-
-            if (!empty($c)){
-                $c = rtrim($c, ", ");
-                return "<h4 class=\"project-categories-title\">Categories</h4>" . $c;
-            }
-
-            return $c;
-        }
-
-/**/        public function contacts() {
-            $contactRoles = $this->project->properties->contactRoles;
-
-            $c = "";
-
-            ob_start();
-            foreach( $contactRoles as $contactRole ) {
-            ?>
-                <div class="contactrole row">
-                            <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
-                            <div style="clear:both"></div>
-                            <div class="col-xs-7">
-                                <?php echo !empty($contactRole->contact->organisation) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
-                                <?php echo !empty($contactRole->contact->firstname) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>
-                                <?php echo !empty($contactRole->contact->fon) ? "<span>Phone: " . $contactRole->contact->fon  . "</span><br/>": ""; ?>
-                                <?php echo !empty($contactRole->contact->mobile) ? "<span>Mobile: " . $contactRole->contact->mobile  . "</span><br/>": ""; ?>
-                                <?php echo !empty($contactRole->contact->email) ? "<span>E-mail: <a href=\"" . antispambot( 'mailto:' . $contactRole->contact->email ) . "\">" . antispambot( $contactRole->contact->email ) . "</a></span><br/>": ""; ?>
-                            </div>
-                </div>
-            <?php
-            }
-            $c = ob_get_clean();
-            /*
-             * <li class="four columns sh_member_wrapper" data-color="#f79d03"><a href="http://scipp.nl/v1/member/paul-hendriksen/" class="sh_member_link fade_anchor"><div class="member_colored_block boxed_shadow"><div class="member_colored_block_in"><div class="navicon-plus sh_member_link_icon body_bk_color"></div></div><img src=http://scipp.nl/v1/wp-content/uploads/2014/09/paul-300x275.jpg alt="" class="mb_in_img" /></div> </a><div class="sh_member_name zero_color header_font bd_headings_text_shadow"><h3 class="small fade_anchor"><a href="http://scipp.nl/v1/member/paul-hendriksen/" class="fade_anchor">Paul Hendriksen </a></h3></div><div class="sh_member_function zero_color bd_headings_text_shadow header_font">Social, Ecologic, Economic</div><div class="tiny_line"></div><div class="sh_member_email default_color"><a href="mailto:p&#97;&#117;l&#46;&#104;e&#110;drikse&#110;&#64;a&#97;rd&#101;h&#117;&#105;&#115;.&#110;&#108;">&#112;&#97;u&#108;&#46;&#104;en&#100;ri&#107;&#115;&#101;&#110;&#64;&#97;&#97;rd&#101;hui&#115;.nl </a></div><div class="clearfix"></div></li>
-             */
-
-            if (!empty($c)){
-                return "<h4 class=\"project-contacts-title\">Contacts</h4><div class=\"row contact-role\">" . $c . "</div>";
-            }
-
-            return $c;
-        }
-
-
-        public function events() {
-
-        }
-
-        public function address()
-        {
-            $address = $this->project->properties->address;
-
-            ob_start();
-            ?>
-            <h4 class="project-address-title">Address</h4>
-            <?php
-            if (!empty($address->street)) {
-                ?>
-            <span class="project-address-1">
-                <span><?php echo $address->street; ?></span>&nbsp;
-            </span>
-            <?php
-            }
-
-            if (!empty($address->city)) {
-                 ?>
-            <br/><span class="project-address-2">
-                <span><?php echo $address->postcode; ?></span>
-                <span><?php echo $address->city; ?></span>
-            </span>
-            <?php
-            }
-
-            if (!empty($address->country)) {
-                 ?>
-                 <br/><span class="project-address-3">
-                     <span><?php echo $address->country; ?></span>
-                 </span>
-                 <?php
-             }
-            return ob_get_clean();
-        }
-    }
 }
 
