@@ -1,9 +1,9 @@
 <?php
 
 /*
-Plugin Name: SCIPP website helper plugin
+Plugin Name: GEN Europe SCIPP Wordpress plugin
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
-Description: A brief description of the Plugin.
+Description: Get Projects, Events from the FLOW database through an API and display it on the website.
 Version: 1.0
 Author: marko kroflic
 Author URI: http://www.mkr.si
