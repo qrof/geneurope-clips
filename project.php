@@ -7,21 +7,29 @@
 get_header(); ?>
 
 <?php
-$p = new WP_SCIPP_Project();
+$p = WP_SCIPP_Plugin::get_project_fromurl();
 ?>
 
 <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
 
         <?php
-        if ( isset( $p->project ) && isset( $p->project->id )) {
+        if ( !empty( $p ) && !empty( $p->id )) {
 
         ?>
-        <article id="post-<?php echo $p->project->id; ?>" <?php post_class("project", null); ?>>
+        <article id="post-<?php echo $p->id; ?>" <?php post_class("project", null); ?>>
 
             <header class="entry-header">
-                <h1 class="entry-title"><?php echo $p->project->properties->name; ?></h1>
-                <div class="project-evolution"><span><?php echo isset($p->project->properties->evolution) ? $p->project->properties->evolution->name : "";?></span></div>
+                <h1 class="entry-title"><?php echo $p->properties->name; ?></h1>
+                <?php
+                if (!empty($p->properties->evolution)) {
+                    ?>
+                    <div class="project-evolution">
+                        <span><?php echo $p->properties->evolution->name; ?></span>
+                    </div>
+                    <?php
+                }
+                ?>
             </header><!-- .entry-header -->
 
             <div class="entry-content">
@@ -29,31 +37,135 @@ $p = new WP_SCIPP_Project();
                     <div class="row">
                         <!-- LEFT Column -->
                         <div class="project-details-left col-md-7 col-sm-7">
-                            <h3 class="project-abstract"><?php echo $p->project->properties->abstract; ?></h3>
-                            <div class="project-description row"><?php echo $p->project->properties->description; ?></div>
+                            <?php
+                            if (!empty($p->properties->abstract)) {
+                            ?>
                             <div class="clear"></div>
-                            <div class="project-interactions row"><?php echo $p->interactions();?></div>
+                            <div class="project-abstract"><p>
+                                    <?php echo $p->properties->abstract; ?>
+                                </p></div><?php
+                            }
+                            if (!empty($p->properties->description)) {
+                                ?><div class="clear"></div>
+                                <div class="project-description row">
+                                <?php echo $p->properties->description; ?>
+                                </div><?php
+                            }
+
+                            $interactions = $p->properties->interactions;
+
+                            if (!empty($interactions)) {
+                                $i = "";
+                                foreach ($interactions as $interaction) {
+                                    $i .= "<span>" . $interaction->name . "</span>, ";
+                                }
+
+
+                                $i = rtrim($i, ", ");
+                                ?>
+                                <div class="clear"></div>
+                                <div class="project-interactions row">
+                                    <h4 class="project-interactions-title">Interactions</h4>
+                                    <div><?php echo $i; ?></div>
+                                </div>
+                                <?php
+                            }
+
+                            $cat_codes = $p->properties->cat_codes;
+
+                            $c = "";
+
+                            foreach( WP_SCIPP_Plugin::get_categories() as $category ) {
+                                if ( in_array($category->id, $cat_codes) ) {
+                                    $c .= "<span>" . $category->name . "</span>, ";
+                                }
+                            }
+
+                            if (!empty($c)){
+                                $c = rtrim($c, ", ");
+                                ?>
+                                <div class="clear"></div>
+                                <div class="project-categories row">
+                                    <h4 class="project-categories-title">Categories</h4>
+                                    <div><?php echo $c; ?></div>
+                                </div>
+                                <?php
+                            }
+
+                            $address = $p->properties->address;
+                            ?>
                             <div class="clear"></div>
-                            <div class="project-categories row"><?php echo $p->categories();?></div>
-                            <div class="clear"></div>
-                            <div class="project-address row"><?php echo $p->address();?></div>
-                            <div class="clear"></div>
-                            <div class="project-contacts row"><?php echo $p->contacts();?></div>
-                            <div class="clear"></div>
-                            <div class="project-events row"><?php echo $p->events();?></div>
+                            <div class="project-address row">
+                                <h4 class="project-address-title">Address</h4>
+                                <?php
+                                if (!empty($address->street)) {
+                                    ?>
+                                    <span class="project-address-1">
+                                                <span><?php echo $address->street; ?></span>
+                                            </span>
+                                    <?php
+                                }
+
+                                if (!empty($address->city)) {
+                                    ?>
+                                    <br/><span class="project-address-2">
+                                                <span><?php echo $address->postcode; ?></span>
+                                                <span><?php echo $address->city; ?></span>
+                                            </span>
+                                    <?php
+                                }
+
+                                if (!empty($address->country)) {
+                                    ?>
+                                    <br/><span class="project-address-3">
+                                                 <span><?php echo $address->country; ?></span>
+                                             </span>
+                                    <?php
+                                }
+                                ?>
+                            </div>
+                            <?php
+                            $contactRoles = $p->properties->contactRoles;
+                            if (!empty($contactRoles)){
+                                ?>
+                                <div class="clear"></div>
+                                <div class="project-contacts row">
+                                    <h4 class="project-contacts-title">Contacts</h4>
+                                    <div class="row contact-role">
+                                        <?php
+                                        $c = "";
+
+                                        foreach( $contactRoles as $contactRole ) { ?>
+                                            <div class="contactrole row">
+                                                <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
+                                                <div style="clear:both"></div>
+                                                <div class="col-xs-7">
+                                                    <?php echo (!empty($contactRole->contact->organisation)) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
+                                                    <?php echo (!empty($contactRole->contact->firstname)) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>
+                                                    <?php echo (!empty($contactRole->contact->fon)) ? "<span>Phone: " . $contactRole->contact->fon  . "</span><br/>": ""; ?>
+                                                    <?php echo (!empty($contactRole->contact->mobile)) ? "<span>Mobile: " . $contactRole->contact->mobile  . "</span><br/>": ""; ?>
+                                                    <?php echo (!empty($contactRole->contact->email)) ? "<span>E-mail: <a href=\"" . antispambot( 'mailto:' . $contactRole->contact->email ) . "\">" . antispambot( $contactRole->contact->email ) . "</a></span><br/>": ""; ?>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        }
+                                        ?></div></div>
+                                <?php
+                            }
+                            ?>
                         </div>
                         <!-- RIGHT Column-->
                         <div class="project-details-right col-md-5 col-sm-5">
                             <?php
-                            if ( !empty($p->project->properties->thumbnail) ) {
+                            if ( !empty($p->properties->thumbnail) ) {
                             ?>
-                            <div class="col-r-1"><img class="project-image" src="<?php echo $p->project->properties->thumbnail; ?>"/></div>
+                            <div class="col-r-1"><img class="project-image" src="<?php echo $p->properties->thumbnail; ?>"/></div>
                             <?php
                             }
                             ?>
                             <div id="project-map"></div>
                             <script>
-                                var scipp_project = <?php echo json_encode($p->project); ?>;
+                                var scipp_project = <?php echo json_encode($p); ?>;
                                 
                                 var scipp_project_map = L.map('project-map');
 
