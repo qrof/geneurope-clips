@@ -68,7 +68,10 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     if (!empty($interactions)) {
                                         $i = "";
                                         foreach ($interactions as $interaction) {
-                                            $i .= "<span>" . $interaction->name . "</span>, ";
+                                            $interaction = WP_SCIPP_Plugin::get_interaction($interaction->id);
+                                            if (!empty($interaction)) {
+                                                $i .= "<span>" . $interaction->name . "</span> - <span>" . $interaction->description . "</span>, ";
+                                            }
                                         }
 
 
@@ -86,9 +89,10 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
 
                                     $c = "";
 
-                                    foreach( WP_SCIPP_Plugin::get_categories() as $category ) {
-                                        if ( in_array($category->id, $cat_codes) ) {
-                                            $c .= "<span>" . $category->name . "</span>, ";
+                                    foreach( $cat_codes as $cat_code ) {
+                                        $category = WP_SCIPP_Plugin::get_category($cat_code);
+                                        if (!empty($category)) {
+                                            $c .= "<span>" . $category->name . "</span> - <span>" . $category->description . "</span>, ";
                                         }
                                     }
 
@@ -144,8 +148,6 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     <h4 class="project-contacts-title">Contacts</h4>
                                     <div class="row contact-role">
                                         <?php
-                                        $c = "";
-
                                         foreach( $contactRoles as $contactRole ) { ?>
                                             <div class="contactrole row">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
