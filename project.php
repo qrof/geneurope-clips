@@ -57,7 +57,10 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             if (!empty($interactions)) {
                                 $i = "";
                                 foreach ($interactions as $interaction) {
-                                    $i .= "<span>" . $interaction->name . "</span>, ";
+                                    $interaction = WP_SCIPP_Plugin::get_interaction($interaction->id);
+                                    if (!empty($interaction)) {
+                                        $i .= "<span>" . $interaction->name . "</span> - <span>" . $interaction->description . "</span>, ";
+                                    }
                                 }
 
 
@@ -75,9 +78,10 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
 
                             $c = "";
 
-                            foreach( WP_SCIPP_Plugin::get_categories() as $category ) {
-                                if ( in_array($category->id, $cat_codes) ) {
-                                    $c .= "<span>" . $category->name . "</span>, ";
+                            foreach( $cat_codes as $cat_code ) {
+                                $category = WP_SCIPP_Plugin::get_category($cat_code);
+                                if (!empty($category)) {
+                                    $c .= "<span>" . $category->name . "</span> - <span>" . $category->description . "</span>, ";
                                 }
                             }
 
@@ -133,8 +137,6 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                     <h4 class="project-contacts-title">Contacts</h4>
                                     <div class="row contact-role">
                                         <?php
-                                        $c = "";
-
                                         foreach( $contactRoles as $contactRole ) { ?>
                                             <div class="contactrole row">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
@@ -150,6 +152,40 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                             <?php
                                         }
                                         ?></div></div>
+                                <?php
+                            }
+
+                            $events = $p->properties->events;
+                            if (!empty($events)){
+                                ?>
+                                <div class="clear"></div>
+                                <div class="project-events row">
+                                    <h4 class="project-events-title">Related Events</h4>
+                                        <?php
+
+                                        foreach( $events as $event ) { ?>
+                                            <div class=" row">
+                                                <div class="col-xs-5"><a href="<?php echo $event->uri; ?>"><?php echo $event->name; ?></a></div>
+                                                <div style="clear:both"></div>
+                                                <div class="col-xs-7">
+                                                    <?php
+                                                    if (!empty($event->start)) {
+                                                    ?>
+                                                    <div class="event-openingtimes"><p><?php
+                                                            echo date_i18n( get_option( 'date_format' ), strtotime( $event->start ) );
+
+                                                            if (!empty($event->stop)) {
+                                                                echo "&nbsp;-&nbsp;" . date_i18n(get_option('date_format'), strtotime($event->stop));
+                                                            }
+                                                            ?></p>
+                                                    </div><?php
+                                                    }
+                                                    ?>
+                                                </div>
+                                            </div>
+                                            <?php
+                                        }
+                                        ?></div>
                                 <?php
                             }
                             ?>
