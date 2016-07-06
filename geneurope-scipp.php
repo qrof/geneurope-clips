@@ -78,10 +78,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
 
         static function enqueue_assets() {
             // include leaflet for maps
-            wp_enqueue_style( 'css-leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css' );
-            wp_enqueue_style( 'css-scipp-plugin', plugins_url( 'css/style.css', __FILE__ ) );
+            wp_enqueue_style( 'leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css' );
+            wp_enqueue_style( 'scipp-plugin', plugins_url( 'css/style.css', __FILE__ ) );
 
-            wp_enqueue_style( 'css-datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
+            wp_enqueue_style( 'datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
         }
 
         private static function get_categories(){
