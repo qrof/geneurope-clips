@@ -47,7 +47,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             }
                             if (!empty($p->properties->description)) {
                                 ?><div class="clear"></div>
-                                <div class="project-description row">
+                                <div class="project-description">
                                 <?php echo $p->properties->description; ?>
                                 </div><?php
                             }
@@ -67,7 +67,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                 $i = rtrim($i, ", ");
                                 ?>
                                 <div class="clear"></div>
-                                <div class="project-interactions row">
+                                <div class="project-interactions">
                                     <h4 class="project-interactions-title">Interactions</h4>
                                     <div><?php echo $i; ?></div>
                                 </div>
@@ -89,7 +89,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                 $c = rtrim($c, ", ");
                                 ?>
                                 <div class="clear"></div>
-                                <div class="project-categories row">
+                                <div class="project-categories">
                                     <h4 class="project-categories-title">Categories</h4>
                                     <div><?php echo $c; ?></div>
                                 </div>
@@ -99,7 +99,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             $address = $p->properties->address;
                             ?>
                             <div class="clear"></div>
-                            <div class="project-address row">
+                            <div class="project-address">
                                 <h4 class="project-address-title">Address</h4>
                                 <?php
                                 if (!empty($address->street)) {
@@ -133,12 +133,12 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             if (!empty($contactRoles)){
                                 ?>
                                 <div class="clear"></div>
-                                <div class="project-contacts row">
+                                <div class="project-contacts">
                                     <h4 class="project-contacts-title">Contacts</h4>
                                     <div class="row contact-role">
                                         <?php
                                         foreach( $contactRoles as $contactRole ) { ?>
-                                            <div class="contactrole row">
+                                            <div class="contactrole">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
                                                 <div style="clear:both"></div>
                                                 <div class="col-xs-7">
@@ -159,12 +159,12 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             if (!empty($events)){
                                 ?>
                                 <div class="clear"></div>
-                                <div class="project-events row">
+                                <div class="project-events">
                                     <h4 class="project-events-title">Related Events</h4>
                                         <?php
 
                                         foreach( $events as $event ) { ?>
-                                            <div class=" row">
+                                            <div class="">
                                                 <div class="col-xs-5"><a href="<?php echo $event->uri; ?>"><?php echo $event->name; ?></a></div>
                                                 <div style="clear:both"></div>
                                                 <div class="col-xs-7">
@@ -193,6 +193,8 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                         <!-- RIGHT Column-->
                         <div class="project-details-right col-md-5 col-sm-5">
                             <?php
+                            //TODO: display networks
+
                             if ( !empty($p->properties->thumbnail) ) {
                             ?>
                             <div class="col-r-1"><img class="project-image" src="<?php echo $p->properties->thumbnail; ?>"/></div>

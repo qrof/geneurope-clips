@@ -58,7 +58,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     }
                                     if (!empty($e->properties->description)) {
                                         ?><div class="clear"></div>
-                                    <div class="event-description row">
+                                    <div class="event-description">
                                         <?php echo $e->properties->description; ?>
                                     </div><?php
                                     }
@@ -78,7 +78,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                         $i = rtrim($i, ", ");
                                         ?>
                                         <div class="clear"></div>
-                                        <div class="event-interactions row">
+                                        <div class="event-interactions">
                                             <h4 class="event-interactions-title">Interactions</h4>
                                             <div><?php echo $i; ?></div>
                                         </div>
@@ -100,7 +100,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                         $c = rtrim($c, ", ");
                                         ?>
                                          <div class="clear"></div>
-                                         <div class="event-categories row">
+                                         <div class="event-categories">
                                              <h4 class="event-categories-title">Categories</h4>
                                              <div><?php echo $c; ?></div>
                                          </div>
@@ -110,7 +110,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     $address = $e->properties->address;
                                 ?>
                                 <div class="clear"></div>
-                                <div class="event-address row">
+                                <div class="event-address">
                                     <h4 class="event-address-title">Address</h4>
                                     <?php
                                         if (!empty($address->street)) {
@@ -144,12 +144,12 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     if (!empty($contactRoles)){
                                         ?>
                                 <div class="clear"></div>
-                                <div class="event-contacts row">
+                                <div class="event-contacts">
                                     <h4 class="project-contacts-title">Contacts</h4>
                                     <div class="row contact-role">
                                         <?php
                                         foreach( $contactRoles as $contactRole ) { ?>
-                                            <div class="contactrole row">
+                                            <div class="contactrole">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
                                                 <div style="clear:both"></div>
                                                 <div class="col-xs-7">
@@ -172,7 +172,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 <?php
                                 if ( !empty($e->properties->project) ) {
                                 ?>
-                                <div class="event-project row">
+                                <div class="event-project">
                                     <p class="event-project-title">This event is part of the project<br/><a href="<?php echo $e->properties->project->uri; ?>"><?php echo $e->properties->project->name; ?></a></p>
                                     <div class="col-r-1"><a href="<?php echo $e->properties->project->uri; ?>"><img class="project-image" src="<?php echo $e->properties->project->thumbnail; ?>"/></a></div>
                                 </div>

@@ -7,7 +7,7 @@
     width: 100%;
 }
 
-.row div {
+.event div, .project div {
     float: left;
 }
 
