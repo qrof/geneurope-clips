@@ -1,9 +1,56 @@
+/*==========  Mobile First Method  ==========*/
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px) {
+    .project, .event {
+        padding: 60px 10px 0 10px;
+    }
+    .project-details-left, .event-details-left, .project-details-right, .event-details-right {
+        width: 100%;
+    }
+
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+    .project, .event {
+        padding: 0px 10px 0 10px;
+    }
+
+    .project-details-left, .event-details-left {
+        width: 57%;
+        padding-right: 1%;
+
+    }
+
+    .project-details-right, .event-details-right {
+        width: 42%;
+    }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+    .project, .event {
+        padding: 0px;
+    }
+}
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
+
+}
+
 #project-map, #event-map {
     height: 450px;
     width: 100%;
 }
 
-.project-image, .event-image {
+.project-thumbnail-image, .event-thumbnail-image {
     width: 100%;
 }
 
@@ -15,20 +62,10 @@
     clear: both;
 }
 
-.project-details-left, .event-details-left {
-    width: 57%;
-    padding-right: 1%;
-
-}
-
-.project-details-right, .event-details-right {
-    width: 42%;
-}
-
 .project-abstract p, .event-abstract p, .event-project-title {
     font-weight: bold;
 }
 
-.contactrole {
+.contact-role {
     padding-bottom: 20px;
 }
