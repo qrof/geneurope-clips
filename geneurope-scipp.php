@@ -114,6 +114,15 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return WP_SCIPP_Plugin::get_remote_flow("admin/evolutions");
         }
 
+        public static function get_evolution( $id ){
+            $evolutions = WP_SCIPP_Plugin::get_evolutions();
+            foreach ($evolutions as $evolution){
+                if ( $evolution->id == $id ){
+                    return $evolution;
+                }
+            }
+        }
+
         static function get_remote_flow( $path ) {
             $data = get_transient( 'scipp_' . $path );
             if( empty( $data ) ) {
