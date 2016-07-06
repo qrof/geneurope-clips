@@ -17,9 +17,14 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
         if ( !empty( $e ) && !empty( $e->id )) {
 
             ?>
-            <article id="post-<?php echo $e->id; ?>" <?php post_class("event", null); ?>>
-                <header class="entry-header">
-                    <div class="prk_titlify_father"><h1 class="entry-title header_font"><?php echo $e->properties->name; ?></h1></div>
+            <article id="post-<?php echo $e->id; ?>" <?php post_class("event prk_inner_block twelve columns centered", null); ?>>
+                <header class="entry-header bd_headings_text_shadow zero_color">
+                    <div class="prk_inner_block">
+                        <div class="single_page_title">
+                            <div class="prk_titlify_father"><h1 class="entry-title header_font"><?php echo $e->properties->name; ?></h1></div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
                     <?php
                     if (!empty($e->properties->evolution)) {
                         ?>

@@ -17,9 +17,9 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
         if ( !empty( $p ) && !empty( $p->id )) {
 
         ?>
-        <article id="post-<?php echo $p->id; ?>" <?php post_class("project", null); ?>>
+        <article id="post-<?php echo $p->id; ?>" <?php post_class("project prk_inner_block twelve columns centered", null); ?>>
 
-            <header class="entry-header">
+            <header class="entry-header bd_headings_text_shadow zero_color">
                 <div class="prk_titlify_father"><h1 class="entry-title header_font"><?php echo $p->properties->name; ?></h1></div>
                 <?php
                 if (!empty($p->properties->evolution)) {
