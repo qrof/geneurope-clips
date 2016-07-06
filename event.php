@@ -40,7 +40,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                     <div id="event-details" class="container">
                         <div class="row">
                             <!-- LEFT Column -->
-                            <div class="event-details-left col-md-7 col-sm-7">
+                            <div class="event-details-left">
                                 <?php
                                     if (!empty($e->properties->start)) {
                                         ?>
@@ -151,13 +151,13 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 <div class="clear"></div>
                                 <div class="event-contacts">
                                     <h4 class="project-contacts-title">Contacts</h4>
-                                    <div class="contact-role">
+                                    <div class="contact-roles">
                                         <?php
                                         foreach( $contactRoles as $contactRole ) { ?>
-                                            <div class="contactrole">
-                                                <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
+                                            <div class="contact-role">
+                                                <div class="role"><?php echo $contactRole->role; ?></div>
                                                 <div class="clear"></div>
-                                                <div class="col-xs-7">
+                                                <div class="contact-details">
                                                     <?php echo (!empty($contactRole->contact->organisation)) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
                                                     <?php echo (!empty($contactRole->contact->firstname)) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>
                                                     <?php echo (!empty($contactRole->contact->fon)) ? "<span>Phone: " . $contactRole->contact->fon  . "</span><br/>": ""; ?>
@@ -173,20 +173,20 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     ?>
                             </div>
                             <!-- RIGHT Column-->
-                            <div class="event-details-right col-md-5 col-sm-5">
+                            <div class="event-details-right">
                                 <?php
                                 if ( !empty($e->properties->project) ) {
                                 ?>
                                 <div class="event-project">
                                     <p class="event-project-title">This event is part of the project<br/><a href="<?php echo get_site_url() . $e->properties->project->uri; ?>"><?php echo $e->properties->project->name; ?></a></p>
-                                    <div class="col-r-1"><a href="<?php echo get_site_url() . $e->properties->project->uri; ?>"><img class="project-image" src="<?php echo $e->properties->project->thumbnail; ?>"/></a></div>
+                                    <div class="project-thumbnail"><a href="<?php echo get_site_url() . $e->properties->project->uri; ?>"><img class="project-thumbnail-image" src="<?php echo $e->properties->project->thumbnail; ?>"/></a></div>
                                 </div>
                                 <?php
                                 }
 
                                 if ( !empty($e->properties->thumbnail) ) {
                                     ?>
-                                    <div class="col-r-1"><img class="event-image" src="<?php echo $e->properties->thumbnail; ?>"/></div>
+                                    <div class="event-thumbnail"><img class="event-thumbnail-image" src="<?php echo $e->properties->thumbnail; ?>"/></div>
                                     <?php
                                 }
                                 ?>
