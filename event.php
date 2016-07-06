@@ -19,7 +19,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
             ?>
             <article id="post-<?php echo $e->id; ?>" <?php post_class("event", null); ?>>
                 <header class="entry-header">
-                    <h1 class="entry-title"><?php echo $e->properties->name; ?></h1>
+                    <div class="prk_titlify_father"><h1 class="entry-title header_font"><?php echo $e->properties->name; ?></h1></div>
                     <?php
                     if (!empty($e->properties->evolution)) {
                         ?>

@@ -20,7 +20,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
         <article id="post-<?php echo $p->id; ?>" <?php post_class("project", null); ?>>
 
             <header class="entry-header">
-                <h1 class="entry-title"><?php echo $p->properties->name; ?></h1>
+                <div class="prk_titlify_father"><h1 class="entry-title header_font"><?php echo $p->properties->name; ?></h1></div>
                 <?php
                 if (!empty($p->properties->evolution)) {
                     ?>
@@ -135,7 +135,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                 <div class="clear"></div>
                                 <div class="project-contacts">
                                     <h4 class="project-contacts-title">Contacts</h4>
-                                    <div class="row contact-role">
+                                    <div class="contact-role">
                                         <?php
                                         foreach( $contactRoles as $contactRole ) { ?>
                                             <div class="contactrole">
