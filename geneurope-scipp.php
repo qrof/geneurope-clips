@@ -225,7 +225,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         });
                     },*/
                     onEachFeature: function (feature, layer) {
-                        var popupContent = '<p><strong><a href="' + feature.properties.uri + '/">' +
+                        var popupContent = '<p><strong><a href="<?php echo get_site_url(); ?>' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
 
                         if (feature.properties && feature.properties.abstract) {
@@ -376,7 +376,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         var stop = new Date(feature.properties.stop);
                         stop = stop.toLocaleDateString() + ', ' + stop.toLocaleTimeString();
 
-                        var popupContent = '<p><strong><a href="' + feature.properties.uri + '/">' +
+                        var popupContent = '<p><strong><a href="<?php echo get_site_url(); ?>' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
 
                         popupContent += '<p>' + start + '&nbsp;-&nbsp;' + stop + '</p>';
@@ -455,20 +455,6 @@ if(!class_exists('WP_SCIPP_Plugin'))
                     scipp_events = <?php echo json_encode($events); ?>;
                 }
                 jQuery(document).ready(function(){
-                    /*jQuery('#projects_list').DataTable({
-                     data: scipp_projects.features,
-                     columns: [
-                     { data: 'properties.name' },
-                     { data: 'properties.abstract' },
-                     { data: 'properties.address.city' },
-                     { data: 'properties.address.countryCode' }
-                     ],
-                     columnDefs: [ {
-                     targets: [ 0 ],
-                     data: null,
-                     defaultContent: "Click to edit"
-                     } ]
-                     });*/
                     jQuery.fn.dataTable.moment( '<?php echo get_option( 'date_format' ); ?>' );
                     jQuery('#events_list').DataTable();
                 });
