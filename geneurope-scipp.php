@@ -53,8 +53,8 @@ if(!class_exists('WP_SCIPP_Plugin'))
         public static function activate()
         {
             // refresh rewrites
-            rewrite_rules();
-            flush_rewrite_rules();
+            WP_SCIPP_Plugin::rewrite_rules();
+            WP_SCIPP_Plugin::flush_rewrite_rules();
         } // END public static function activate
 
         /**
