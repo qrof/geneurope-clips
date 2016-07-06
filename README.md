@@ -1,5 +1,6 @@
 # geneurope-scipp
 GEN Europe SCIPP Wordpress plugin
+
 Get Projects, Events from the FLOW database through an API and display it on the website.
 
 Uses:
