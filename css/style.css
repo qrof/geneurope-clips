@@ -2,11 +2,19 @@
 
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
-    .project, .event {
-        padding: 60px 10px 0 10px;
+    #prk_ajax_container .project, #prk_ajax_container .event {
+        padding-top: 60px;
     }
+
     .project-details-left, .event-details-left, .project-details-right, .event-details-right {
         width: 100%;
+    }
+
+    #prk_ajax_container .project-details-left, #prk_ajax_container .event-details-left,
+    #prk_ajax_container .project-details-right, #prk_ajax_container .event-details-right {
+        width: 100%;
+        padding-left: 10px;
+        padding-right: 20px;
     }
 
 }
@@ -18,18 +26,23 @@
 
 /* Small Devices, Tablets */
 @media only screen and (min-width : 768px) {
-    .project, .event {
+    #prk_ajax_container .project, #prk_ajax_container .event {
         padding: 0px 10px 0 10px;
     }
 
-    .project-details-left, .event-details-left {
+    .project-details-left, .event-details-left,
+    #prk_ajax_container .project-details-left, #prk_ajax_container .event-details-left {
         width: 57%;
-        padding-right: 1%;
+        padding-right: 0px;
+        padding-left: 0px;
 
     }
 
-    .project-details-right, .event-details-right {
-        width: 42%;
+    .project-details-right, .event-details-right,
+    #prk_ajax_container .project-details-right, #prk_ajax_container .event-details-right {
+        width: 43%;
+        padding-left: 1%;
+        padding-right: 0px;
     }
 }
 
