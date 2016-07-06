@@ -280,7 +280,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                     ?>
                         <tr>
                             <td>
-                                <span><a href="<?php echo $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
+                                <span><a href="<?php echo get_site_url() . $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
                                 <br/>
                                 <span><?php echo trim($project->properties->abstract); ?></span>
                             </td>
@@ -435,7 +435,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         <tr>
                             <td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->start ) ); ?></td>
                             <td>
-                                <span><a href="<?php echo $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
+                                <span><a href="<?php echo get_site_url() . $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
                                 <br/>
                                 <span><?php echo trim($event->properties->abstract); ?></span>
                             </td>
