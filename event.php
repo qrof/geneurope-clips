@@ -146,12 +146,12 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 <div class="clear"></div>
                                 <div class="event-contacts">
                                     <h4 class="project-contacts-title">Contacts</h4>
-                                    <div class="row contact-role">
+                                    <div class="contact-role">
                                         <?php
                                         foreach( $contactRoles as $contactRole ) { ?>
                                             <div class="contactrole">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
-                                                <div style="clear:both"></div>
+                                                <div class="clear"></div>
                                                 <div class="col-xs-7">
                                                     <?php echo (!empty($contactRole->contact->organisation)) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
                                                     <?php echo (!empty($contactRole->contact->firstname)) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>

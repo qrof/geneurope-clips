@@ -11,7 +11,7 @@
     float: left;
 }
 
-.clear {
+.event .clear, .project .clear {
     clear: both;
 }
 

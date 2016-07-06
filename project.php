@@ -140,7 +140,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                         foreach( $contactRoles as $contactRole ) { ?>
                                             <div class="contactrole">
                                                 <div class="col-xs-5"><?php echo $contactRole->role; ?></div>
-                                                <div style="clear:both"></div>
+                                                <div class="clear"></div>
                                                 <div class="col-xs-7">
                                                     <?php echo (!empty($contactRole->contact->organisation)) ? "<span><strong>" . $contactRole->contact->organisation . "</strong></span><br/>" : ""; ?>
                                                     <?php echo (!empty($contactRole->contact->firstname)) ? "<span><strong>" . $contactRole->contact->function . " " . $contactRole->contact->firstname . " " . $contactRole->contact->surename . "</strong></span><br/>" : ""; ?>
@@ -166,7 +166,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                                         foreach( $events as $event ) { ?>
                                             <div class="">
                                                 <div class="col-xs-5"><a href="<?php echo $event->uri; ?>"><?php echo $event->name; ?></a></div>
-                                                <div style="clear:both"></div>
+                                                <div class="clear"></div>
                                                 <div class="col-xs-7">
                                                     <?php
                                                     if (!empty($event->start)) {
