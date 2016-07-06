@@ -165,7 +165,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
 
                                         foreach( $events as $event ) { ?>
                                             <div class="">
-                                                <div class="col-xs-5"><a href="<?php echo $event->uri; ?>"><?php echo $event->name; ?></a></div>
+                                                <div class="col-xs-5"><a href="<?php echo get_site_url() . $event->uri; ?>"><?php echo $event->name; ?></a></div>
                                                 <div class="clear"></div>
                                                 <div class="col-xs-7">
                                                     <?php

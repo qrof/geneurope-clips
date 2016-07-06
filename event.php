@@ -173,8 +173,8 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 if ( !empty($e->properties->project) ) {
                                 ?>
                                 <div class="event-project">
-                                    <p class="event-project-title">This event is part of the project<br/><a href="<?php echo $e->properties->project->uri; ?>"><?php echo $e->properties->project->name; ?></a></p>
-                                    <div class="col-r-1"><a href="<?php echo $e->properties->project->uri; ?>"><img class="project-image" src="<?php echo $e->properties->project->thumbnail; ?>"/></a></div>
+                                    <p class="event-project-title">This event is part of the project<br/><a href="<?php echo get_site_url() . $e->properties->project->uri; ?>"><?php echo $e->properties->project->name; ?></a></p>
+                                    <div class="col-r-1"><a href="<?php echo get_site_url() . $e->properties->project->uri; ?>"><img class="project-image" src="<?php echo $e->properties->project->thumbnail; ?>"/></a></div>
                                 </div>
                                 <?php
                                 }
