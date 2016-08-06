@@ -1,7 +1,7 @@
 <?php
 
 /*
-Plugin Name: GEN Europe SCIPP Wordpress plugin
+Plugin Name: GEN Europe CLIPS Wordpress plugin
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
 Description: Get Projects, Events from the FLOW database through an API and display it on the website.
 Version: 1.0
@@ -10,9 +10,9 @@ Author URI: http://www.mkr.si
 License: GPL2
 */
 
-if(!class_exists('WP_SCIPP_Plugin'))
+if(!class_exists('WP_CLIPS_Plugin'))
 {
-    class WP_SCIPP_Plugin
+    class WP_CLIPS_Plugin
     {
         private static $cache_time = MINUTE_IN_SECONDS;
 
@@ -24,26 +24,26 @@ if(!class_exists('WP_SCIPP_Plugin'))
             // Initialize Settings
             if( is_admin() ) {
                 require_once(sprintf("%s/settings.php", dirname(__FILE__)));
-                $scipp_settings_page = new ScippSettingsPage();
+                $clips_settings_page = new ScippSettingsPage();
             }
 
             // register actions
             //if( !is_admin() ) {
-            add_action('wp_enqueue_scripts', array('WP_SCIPP_Plugin', 'enqueue_scripts'));
-            add_action('wp_enqueue_scripts', array('WP_SCIPP_Plugin', 'enqueue_assets'));
+            add_action('wp_enqueue_scripts', array('WP_CLIPS_Plugin', 'enqueue_scripts'));
+            add_action('wp_enqueue_scripts', array('WP_CLIPS_Plugin', 'enqueue_assets'));
 
-            add_action( 'init',  array('WP_SCIPP_Plugin', 'rewrite_rules' ));
-            add_action( 'init',  array('WP_SCIPP_Plugin', 'output_options' ));
-            add_action( 'template_redirect', array('WP_SCIPP_Plugin', 'rewrite_templates' ));
+            add_action( 'init',  array('WP_CLIPS_Plugin', 'rewrite_rules' ));
+            add_action( 'init',  array('WP_CLIPS_Plugin', 'output_options' ));
+            add_action( 'template_redirect', array('WP_CLIPS_Plugin', 'rewrite_templates' ));
 
             // register filters
-            add_filter( 'query_vars', array('WP_SCIPP_Plugin', 'rewrite_add_var' ));
+            add_filter( 'query_vars', array('WP_CLIPS_Plugin', 'rewrite_add_var' ));
 
             // register shortcodes
-            add_shortcode( 'scipp_projects_map', array('WP_SCIPP_Plugin', 'projects_map_func'));
-            add_shortcode( 'scipp_projects_list', array('WP_SCIPP_Plugin', 'projects_list_func'));
-            add_shortcode( 'scipp_events_map', array('WP_SCIPP_Plugin', 'events_map_func'));
-            add_shortcode( 'scipp_events_list', array('WP_SCIPP_Plugin', 'events_list_func'));
+            add_shortcode( 'clips_projects_map', array('WP_CLIPS_Plugin', 'projects_map_func'));
+            add_shortcode( 'clips_projects_list', array('WP_CLIPS_Plugin', 'projects_list_func'));
+            add_shortcode( 'clips_events_map', array('WP_CLIPS_Plugin', 'events_map_func'));
+            add_shortcode( 'clips_events_list', array('WP_CLIPS_Plugin', 'events_list_func'));
             //}
         } // END public function __construct
 
@@ -53,7 +53,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
         public static function activate()
         {
             // refresh rewrites
-            WP_SCIPP_Plugin::rewrite_rules();
+            WP_CLIPS_Plugin::rewrite_rules();
             flush_rewrite_rules();
         } // END public static function activate
 
@@ -74,22 +74,25 @@ if(!class_exists('WP_SCIPP_Plugin'))
             wp_enqueue_script('js-moment', '//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js', array( 'jquery' ) );
 
             wp_enqueue_script('js-datatables-moment', '//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js', array( 'jquery', 'js-moment', 'js-datatables' ) );
+
+            wp_enqueue_script( 'js-clips-plugin', plugins_url( 'js/clips.js', __FILE__ ) );
+
         }
 
         static function enqueue_assets() {
             // include leaflet for maps
             wp_enqueue_style( 'leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css' );
-            wp_enqueue_style( 'scipp-plugin', plugins_url( 'css/style.css', __FILE__ ) );
+            wp_enqueue_style( 'clips-plugin', plugins_url( 'css/style.css', __FILE__ ) );
 
             wp_enqueue_style( 'datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
         }
 
         private static function get_categories(){
-            return WP_SCIPP_Plugin::get_remote_flow("admin/categories");
+            return WP_CLIPS_Plugin::get_remote_flow("admin/categories");
         }
 
         public static function get_category( $id ){
-            $categories = WP_SCIPP_Plugin::get_categories();
+            $categories = WP_CLIPS_Plugin::get_categories();
             foreach ($categories as $category){
                 if ( $category->id == $id ){
                     return $category;
@@ -98,11 +101,11 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         private static function get_interactions(){
-            return WP_SCIPP_Plugin::get_remote_flow("admin/interactions");
+            return WP_CLIPS_Plugin::get_remote_flow("admin/interactions");
         }
 
         public static function get_interaction( $id ){
-            $interactions = WP_SCIPP_Plugin::get_interactions();
+            $interactions = WP_CLIPS_Plugin::get_interactions();
             foreach ($interactions as $interaction){
                 if ( $interaction->id == $id ){
                     return $interaction;
@@ -111,11 +114,11 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         private static function get_evolutions(){
-            return WP_SCIPP_Plugin::get_remote_flow("admin/evolutions");
+            return WP_CLIPS_Plugin::get_remote_flow("admin/evolutions");
         }
 
         public static function get_evolution( $id ){
-            $evolutions = WP_SCIPP_Plugin::get_evolutions();
+            $evolutions = WP_CLIPS_Plugin::get_evolutions();
             foreach ($evolutions as $evolution){
                 if ( $evolution->id == $id ){
                     return $evolution;
@@ -124,10 +127,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         static function get_remote_flow( $path ) {
-            $data = get_transient( 'scipp_' . $path );
+            $data = get_transient( 'clips_' . $path );
             if( empty( $data ) ) {
-                $scipp_options = get_option( 'scipp_options' );
-                $api_url = !empty( $scipp_options['api_url'] ) ? esc_url( $scipp_options['api_url']) : '';
+                $clips_options = get_option( 'clips_options' );
+                $api_url = !empty( $clips_options['api_url'] ) ? esc_url( $clips_options['api_url']) : '';
                 $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json', 'Accept-Language' => get_locale()), ) );
                 if( is_wp_error( $response ) ) {
                     return array();
@@ -139,24 +142,24 @@ if(!class_exists('WP_SCIPP_Plugin'))
                     return array();
                 }
 
-                set_transient( 'scipp_' . $path , $data, WP_SCIPP_Plugin::$cache_time );
+                set_transient( 'clips_' . $path , $data, WP_CLIPS_Plugin::$cache_time );
             }
 
             return $data;
         }
 
         public static function get_event_fromurl() {
-            if ( get_query_var( 'scipp-event' ) ) {
-                $event_id = get_query_var('scipp-event');
-                if ( get_query_var( 'scipp-lang' ) ) {
-                    $lang = get_query_var('scipp-lang');
+            if ( get_query_var( 'clips-event' ) ) {
+                $event_id = get_query_var('clips-event');
+                if ( get_query_var( 'clips-lang' ) ) {
+                    $lang = get_query_var('clips-lang');
                 }
                 else
                     $lang = "";
 
                 $path = "events/" . $lang . "/" . $event_id . ".json";
 
-                $event = WP_SCIPP_Plugin::get_remote_flow($path);
+                $event = WP_CLIPS_Plugin::get_remote_flow($path);
 
                 return $event;
             }
@@ -166,17 +169,17 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         public static function get_project_fromurl() {
-            if ( get_query_var( 'scipp-project' ) ) {
-                $project_id = get_query_var('scipp-project');
-                if ( get_query_var( 'scipp-lang' ) ) {
-                    $lang = get_query_var('scipp-lang');
+            if ( get_query_var( 'clips-project' ) ) {
+                $project_id = get_query_var('clips-project');
+                if ( get_query_var( 'clips-lang' ) ) {
+                    $lang = get_query_var('clips-lang');
                 }
                 else
                     $lang = "";
 
                 $path = "projects/" . $lang . "/" . $project_id . ".json";
 
-                $project = WP_SCIPP_Plugin::get_remote_flow($path);
+                $project = WP_CLIPS_Plugin::get_remote_flow($path);
 
                 return $project;
             }
@@ -185,7 +188,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             }
         }
 
-        // [scipp_projects_map width="100%" height="400px"]
+        // [clips_projects_map width="100%" height="400px"]
         public static function projects_map_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
@@ -193,7 +196,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             ), $atts );
 
 
-            $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
+            $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
 
 
             if( empty( $projects ) ) {
@@ -204,10 +207,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
             ?>
             <div id="projects_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
             <script>
-                if (scipp_projects == undefined) {
-                    var scipp_projects = <?php echo json_encode($projects); ?>;
+                if (clips_projects == undefined) {
+                    var clips_projects = <?php echo json_encode($projects); ?>;
                 }
-                var scipp_projects_map = L.map('projects_map');
+                var clips_projects_map = L.map('projects_map');
 
                 // create the tile layer with correct attribution
                 var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -215,10 +218,11 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
                 // start the map
-                scipp_projects_map.setView(new L.LatLng(47.626349,7.336981),4);
-                scipp_projects_map.addLayer(osm);
+                var locationEurope = new L.LatLng(47.626349,7.336981);
+                clips_projects_map.setView(locationEurope,4);
+                clips_projects_map.addLayer(osm);
 
-                L.geoJson(scipp_projects, {
+                L.geoJson(clips_projects, {
                     style: function (feature) {
                         return {color: feature.properties.color};
                     },
@@ -243,31 +247,31 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         }
 
                         layer.bindPopup(popupContent);
-                    },/*
+                    }/*,
                     filter: function(feature, layer) {
                         return feature.properties.evolution > 0;
                     }*/
-                }).addTo(scipp_projects_map);
+                }).addTo(clips_projects_map);
                 /*
                 var overlayMaps = {
                     "Cities": cities
                 };
 
-                L.control.layers(overlayMaps).addTo(scipp_projects_map);
+                L.control.layers(overlayMaps).addTo(clips_projects_map);
                 */
             </script>
             <?php
             return ob_get_clean();
         }
 
-        // [scipp_projects_list width="100%" height="400px"]
+        // [clips_projects_list width="100%" height="400px"]
         public static function projects_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
                 'width' => '100%',
             ), $atts );
 
-            $projects = WP_SCIPP_Plugin::get_remote_flow("projects.json");
+            $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
 
             if( empty( $projects ) ) {
                 return;
@@ -305,12 +309,12 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 </table>
             </div>
             <script>
-                if (scipp_projects == undefined) {
-                    scipp_projects = <?php echo json_encode($projects); ?>;
+                if (clips_projects == undefined) {
+                    clips_projects = <?php echo json_encode($projects); ?>;
                 }
                 jQuery(document).ready(function(){
                     /*jQuery('#projects_list').DataTable({
-                        data: scipp_projects.features,
+                        data: clips_projects.features,
                         columns: [
                             { data: 'properties.name' },
                             { data: 'properties.abstract' },
@@ -330,7 +334,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             return ob_get_clean();
         }
 
-        // [scipp_events_map width="100%" height="400px"]
+        // [clips_events_map width="100%" height="400px"]
         public static function events_map_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
@@ -338,7 +342,7 @@ if(!class_exists('WP_SCIPP_Plugin'))
             ), $atts );
 
 
-            $events = WP_SCIPP_Plugin::get_remote_flow("events.json");
+            $events = WP_CLIPS_Plugin::get_remote_flow("events.json");
 
 
             if( empty( $events ) ) {
@@ -349,10 +353,10 @@ if(!class_exists('WP_SCIPP_Plugin'))
             ?>
             <div id="events_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
             <script>
-                if (scipp_events == undefined) {
-                    var scipp_events = <?php echo json_encode($events); ?>;
+                if (clips_events == undefined) {
+                    var clips_events = <?php echo json_encode($events); ?>;
                 }
-                var scipp_events_map = L.map('events_map');
+                var clips_events_map = L.map('events_map');
 
                 // create the tile layer with correct attribution
                 var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -360,10 +364,11 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
                 // start the map
-                scipp_events_map.setView(new L.LatLng(47.626349,7.336981), 4);
-                scipp_events_map.addLayer(osm);
+                var locationEurope = new L.LatLng(47.626349,7.336981);
+                clips_events_map.setView(locationEurope, 4);
+                clips_events_map.addLayer(osm);
 
-                L.geoJson(scipp_events, {
+                L.geoJson(clips_events, {
                     style: function (feature) {
                         return {color: feature.properties.color};
                     },
@@ -396,31 +401,31 @@ if(!class_exists('WP_SCIPP_Plugin'))
                         }
 
                         layer.bindPopup(popupContent);
-                    },/*
+                    }/*,
                      filter: function(feature, layer) {
                      return feature.properties.evolution > 0;
                      }*/
-                }).addTo(scipp_events_map);
+                }).addTo(clips_events_map);
                 /*
                  var overlayMaps = {
                  "Cities": cities
                  };
 
-                 L.control.layers(overlayMaps).addTo(scipp_projects_map);
+                 L.control.layers(overlayMaps).addTo(clips_projects_map);
                  */
             </script>
             <?php
             return ob_get_clean();
         }
 
-        // [scipp_events_list width="100%" height="400px"]
+        // [clips_events_list width="100%" height="400px"]
         public static function events_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'height' => '400px',
                 'width' => '100%',
             ), $atts );
 
-            $events = WP_SCIPP_Plugin::get_remote_flow("events.json");
+            $events = WP_CLIPS_Plugin::get_remote_flow("events.json");
 
             if( empty( $events ) ) {
                 return;
@@ -460,8 +465,8 @@ if(!class_exists('WP_SCIPP_Plugin'))
                 </table>
             </div>
             <script>
-                if (scipp_events == undefined) {
-                    scipp_events = <?php echo json_encode($events); ?>;
+                if (clips_events == undefined) {
+                    clips_events = <?php echo json_encode($events); ?>;
                 }
                 jQuery(document).ready(function(){
                     jQuery.fn.dataTable.moment( '<?php echo get_option( 'date_format' ); ?>' );
@@ -475,33 +480,33 @@ if(!class_exists('WP_SCIPP_Plugin'))
 
         public static function rewrite_add_var( $vars )
         {
-            $vars[] = 'scipp-project';
-            $vars[] = 'scipp-event';
-            $vars[] = 'scipp-lang';
-            $vars[] = 'scipp-options';
+            $vars[] = 'clips-project';
+            $vars[] = 'clips-event';
+            $vars[] = 'clips-lang';
+            $vars[] = 'clips-options';
             return $vars;
         }
 
         public static function rewrite_rules() {
-            add_rewrite_rule( 'projects/([^/]+)/([^/]+)/?$', 'index.php?scipp-project=$matches[2]&scipp-lang=$matches[1]', 'top' );
-            add_rewrite_rule( 'events/([^/]+)/([^/]+)/?$', 'index.php?scipp-event=$matches[2]&scipp-lang=$matches[1]', 'top' );
+            add_rewrite_rule( 'projects/([^/]+)/([^/]+)/?$', 'index.php?clips-project=$matches[2]&clips-lang=$matches[1]', 'top' );
+            add_rewrite_rule( 'events/([^/]+)/([^/]+)/?$', 'index.php?clips-event=$matches[2]&clips-lang=$matches[1]', 'top' );
         }
 
         static function output_options() {
             //$nonce = $_REQUEST['_wpnonce'];
-            //if ( !empty($_GET['scipp-options']) && ! wp_verify_nonce( $nonce, $this->scipp-nonce) ) {
+            //if ( !empty($_GET['clips-options']) && ! wp_verify_nonce( $nonce, $this->clips-nonce) ) {
                 // This nonce is not valid.
             //    die( 'Security check' );
             //} else {
 
-            if ( !empty($_GET['scipp-options']) ) {
+            if ( !empty($_GET['clips-options']) ) {
                 $response = array(
-                    'categories'	    => WP_SCIPP_Plugin::get_remote_flow("admin/categories"),
-                    'interactions'	    => WP_SCIPP_Plugin::get_remote_flow("admin/interactions"),
-                    'evolutions'        => WP_SCIPP_Plugin::get_remote_flow("admin/evolutions")
+                    'categories'	    => WP_CLIPS_Plugin::get_remote_flow("admin/categories"),
+                    'interactions'	    => WP_CLIPS_Plugin::get_remote_flow("admin/interactions"),
+                    'evolutions'        => WP_CLIPS_Plugin::get_remote_flow("admin/evolutions")
                 );
 
-                $json_response = 'var scipp_options = ' . json_encode( $response ) . ';';
+                $json_response = 'var clips_options = ' . json_encode( $response ) . ';';
 
                 @header( 'Content-Type: application/javascript; charset=' . get_option( 'blog_charset' ) );
                 echo $json_response;
@@ -510,28 +515,28 @@ if(!class_exists('WP_SCIPP_Plugin'))
         }
 
         public static function rewrite_templates() {
-            if ( get_query_var( 'scipp-project' ) ) {
+            if ( get_query_var( 'clips-project' ) ) {
                 add_filter( 'template_include', function() {
                     return plugin_dir_path( __FILE__ ) . 'project.php';
                 });
             }
 
-            if ( get_query_var( 'scipp-event' ) ) {
+            if ( get_query_var( 'clips-event' ) ) {
                 add_filter( 'template_include', function() {
                     return plugin_dir_path( __FILE__ ) . 'event.php';
                 });
             }
         }
-    } // END class WP_SCIPP_Plugin
-} // END if(!class_exists('WP_SCIPP_Plugin'))
+    } // END class WP_CLIPS_Plugin
+} // END if(!class_exists('WP_CLIPS_Plugin'))
 
-if(class_exists('WP_SCIPP_Plugin'))
+if(class_exists('WP_CLIPS_Plugin'))
 {
     // Installation and uninstallation hooks
-    register_activation_hook(__FILE__, array('WP_SCIPP_Plugin', 'activate'));
-    register_deactivation_hook(__FILE__, array('WP_SCIPP_Plugin', 'deactivate'));
+    register_activation_hook(__FILE__, array('WP_CLIPS_Plugin', 'activate'));
+    register_deactivation_hook(__FILE__, array('WP_CLIPS_Plugin', 'deactivate'));
 
     // instantiate the plugin class
-    $wp_scipp_plugin = new WP_SCIPP_Plugin();
+    $wp_clips_plugin = new WP_CLIPS_Plugin();
 }
 

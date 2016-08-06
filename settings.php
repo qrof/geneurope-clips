@@ -30,9 +30,9 @@ class ScippSettingsPage
         // This page will be under "Settings"
         add_options_page(
             'Settings Admin',
-            'SCIPP Settings',
+            'CLIPS Settings',
             'manage_options',
-            'scipp-setting-admin',
+            'clips-setting-admin',
             array( $this, 'create_admin_page' )
         );
     }
@@ -43,15 +43,15 @@ class ScippSettingsPage
     public function create_admin_page()
     {
         // Set class property
-        $this->options = get_option( 'scipp_options' );
+        $this->options = get_option( 'clips_options' );
         ?>
         <div class="wrap">
-            <h2>SCIPP Settings</h2>
+            <h2>CLIPS Settings</h2>
             <form method="post" action="options.php">
                 <?php
                 // This prints out all hidden setting fields
-                settings_fields( 'scipp_option_group' );
-                do_settings_sections( 'scipp-setting-admin' );
+                settings_fields( 'clips_option_group' );
+                do_settings_sections( 'clips-setting-admin' );
                 submit_button();
                 ?>
             </form>
@@ -65,23 +65,23 @@ class ScippSettingsPage
     public function page_init()
     {
         register_setting(
-            'scipp_option_group', // Option group
-            'scipp_options', // Option name
+            'clips_option_group', // Option group
+            'clips_options', // Option name
             array( $this, 'sanitize' ) // Sanitize
         );
 
         add_settings_section(
             'setting_section_id', // ID
-            'SCIPP Custom Settings', // Title
+            'CLIPS Custom Settings', // Title
             array( $this, 'print_section_info' ), // Callback
-            'scipp-setting-admin' // Page
+            'clips-setting-admin' // Page
         );
 
         add_settings_field(
             'api_url',
             'API url',
             array( $this, 'api_url_callback' ),
-            'scipp-setting-admin',
+            'clips-setting-admin',
             'setting_section_id'
         );
 
@@ -90,7 +90,7 @@ class ScippSettingsPage
             'id_number', // ID
             'ID Number', // Title
             array( $this, 'id_number_callback' ), // Callback
-            'scipp-setting-admin', // Page
+            'clips-setting-admin', // Page
             'setting_section_id' // Section
         );
         */
@@ -128,7 +128,7 @@ class ScippSettingsPage
     public function id_number_callback()
     {
         printf(
-            '<input type="text" id="id_number" name="scipp_options[id_number]" value="%s" />',
+            '<input type="text" id="id_number" name="clips_options[id_number]" value="%s" />',
             isset( $this->options['id_number'] ) ? esc_attr( $this->options['id_number']) : ''
         );
     }
@@ -139,7 +139,7 @@ class ScippSettingsPage
     public function api_url_callback()
     {
         printf(
-            '<input type="url" id="api_url" name="scipp_options[api_url]" value="%s" class="regular-text code" />',
+            '<input type="url" id="api_url" name="clips_options[api_url]" value="%s" class="regular-text code" />',
             isset( $this->options['api_url'] ) ? esc_url( $this->options['api_url']) : ''
         );
     }

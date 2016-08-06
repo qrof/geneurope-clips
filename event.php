@@ -1,13 +1,13 @@
 <?php
 /**
- * The template for displaying a SCIPP event
+ * The template for displaying a CLIPS event
  *
  */
 
 get_header(); ?>
 
 <?php
-$e = WP_SCIPP_Plugin::get_event_fromurl();
+$e = WP_CLIPS_Plugin::get_event_fromurl();
 ?>
 
 <div id="primary" class="content-area">
@@ -73,7 +73,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     if (!empty($interactions)) {
                                         $i = "";
                                         foreach ($interactions as $interaction) {
-                                            $interaction = WP_SCIPP_Plugin::get_interaction($interaction->id);
+                                            $interaction = WP_CLIPS_Plugin::get_interaction($interaction->id);
                                             if (!empty($interaction)) {
                                                 $i .= "<span>" . $interaction->name . "</span> - <span>" . $interaction->description . "</span>, ";
                                             }
@@ -95,7 +95,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                     $c = "";
 
                                     foreach( $cat_codes as $cat_code ) {
-                                        $category = WP_SCIPP_Plugin::get_category($cat_code);
+                                        $category = WP_CLIPS_Plugin::get_category($cat_code);
                                         if (!empty($category)) {
                                             $c .= "<span>" . $category->name . "</span> - <span>" . $category->description . "</span>, ";
                                         }
@@ -192,9 +192,9 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
                                 ?>
                                 <div id="event-map"></div>
                                 <script>
-                                    var scipp_event = <?php echo json_encode($e); ?>;
+                                    var clips_event = <?php echo json_encode($e); ?>;
 
-                                    var scipp_event_map = L.map('event-map');
+                                    var clips_event_map = L.map('event-map');
 
                                     // create the tile layer with correct attribution
                                     var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -203,17 +203,17 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
 
                                     // start the map
                                     var coords;
-                                    for (var i in scipp_event.geometry.geometries ) {
-                                        if ( scipp_event.geometry.geometries[i].type == "Point" ) {
-                                            coords = scipp_event.geometry.geometries[i].coordinates;
+                                    for (var i in clips_event.geometry.geometries ) {
+                                        if ( clips_event.geometry.geometries[i].type == "Point" ) {
+                                            coords = clips_event.geometry.geometries[i].coordinates;
                                             break;
                                         }
                                     }
                                     if ( coords != undefined ) {
-                                        scipp_event_map.setView(new L.LatLng(coords[1],coords[0]),9);
-                                        scipp_event_map.addLayer(osm);
+                                        clips_event_map.setView(new L.LatLng(coords[1],coords[0]),9);
+                                        clips_event_map.addLayer(osm);
 
-                                        L.geoJson(scipp_event, {
+                                        L.geoJson(clips_event, {
                                             style: function (feature) {
                                                 return {color: feature.properties.color};
                                             },
@@ -227,7 +227,7 @@ $e = WP_SCIPP_Plugin::get_event_fromurl();
 
                                                 layer.bindPopup(popupContent);
                                             }
-                                        }).addTo(scipp_event_map);
+                                        }).addTo(clips_event_map);
 
                                     }
 

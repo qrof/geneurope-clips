@@ -1,13 +1,13 @@
 <?php
 /**
- * The template for displaying a SCIPP project
+ * The template for displaying a CLIPS project
  *
  */
 
 get_header(); ?>
 
 <?php
-$p = WP_SCIPP_Plugin::get_project_fromurl();
+$p = WP_CLIPS_Plugin::get_project_fromurl();
 ?>
 
 <div id="primary" class="content-area">
@@ -57,7 +57,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             if (!empty($interactions)) {
                                 $i = "";
                                 foreach ($interactions as $interaction) {
-                                    $interaction = WP_SCIPP_Plugin::get_interaction($interaction->id);
+                                    $interaction = WP_CLIPS_Plugin::get_interaction($interaction->id);
                                     if (!empty($interaction)) {
                                         $i .= "<span>" . $interaction->name . "</span> - <span>" . $interaction->description . "</span>, ";
                                     }
@@ -79,7 +79,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             $c = "";
 
                             foreach( $cat_codes as $cat_code ) {
-                                $category = WP_SCIPP_Plugin::get_category($cat_code);
+                                $category = WP_CLIPS_Plugin::get_category($cat_code);
                                 if (!empty($category)) {
                                     $c .= "<span>" . $category->name . "</span> - <span>" . $category->description . "</span>, ";
                                 }
@@ -201,9 +201,9 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
                             ?>
                             <div id="project-map"></div>
                             <script>
-                                var scipp_project = <?php echo json_encode($p); ?>;
+                                var clips_project = <?php echo json_encode($p); ?>;
                                 
-                                var scipp_project_map = L.map('project-map');
+                                var clips_project_map = L.map('project-map');
 
                                 // create the tile layer with correct attribution
                                 var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -212,17 +212,17 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
 
                                 // start the map
                                 var coords;
-                                for (var i in scipp_project.geometry.geometries ) {
-                                    if ( scipp_project.geometry.geometries[i].type == "Point" ) {
-                                        coords = scipp_project.geometry.geometries[i].coordinates;
+                                for (var i in clips_project.geometry.geometries ) {
+                                    if ( clips_project.geometry.geometries[i].type == "Point" ) {
+                                        coords = clips_project.geometry.geometries[i].coordinates;
                                         break;
                                     }
                                 }
                                 if ( coords != undefined ) {
-                                    scipp_project_map.setView(new L.LatLng(coords[1],coords[0]),9);
-                                    scipp_project_map.addLayer(osm);
+                                    clips_project_map.setView(new L.LatLng(coords[1],coords[0]),9);
+                                    clips_project_map.addLayer(osm);
 
-                                    L.geoJson(scipp_project, {
+                                    L.geoJson(clips_project, {
                                         style: function (feature) {
                                             return {color: feature.properties.color};
                                         },
@@ -236,7 +236,7 @@ $p = WP_SCIPP_Plugin::get_project_fromurl();
 
                                             layer.bindPopup(popupContent);
                                         }
-                                    }).addTo(scipp_project_map);
+                                    }).addTo(clips_project_map);
 
                                 }
 
