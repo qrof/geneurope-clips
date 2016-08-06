@@ -129,8 +129,12 @@ if(!class_exists('WP_CLIPS_Plugin'))
         static function get_remote_flow( $path ) {
             $data = get_transient( 'clips_' . $path );
             if( empty( $data ) ) {
+                // get api url from options - need to enter it!
                 $clips_options = get_option( 'clips_options' );
                 $api_url = !empty( $clips_options['api_url'] ) ? esc_url( $clips_options['api_url']) : '';
+                // trim and add trailing slash
+                $api_url = rtrim($api_url, '/') . '/';
+
                 $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json', 'Accept-Language' => get_locale()), ) );
                 if( is_wp_error( $response ) ) {
                     return array();
@@ -197,7 +201,6 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
 
             $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
-
 
             if( empty( $projects ) ) {
                 return;
