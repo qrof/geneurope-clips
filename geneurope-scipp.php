@@ -210,7 +210,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             ?>
             <div id="projects_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
             <script>
-                if (clips_projects == undefined) {
+                if (typeof clips_projects == 'undefined') {
                     var clips_projects = <?php echo json_encode($projects); ?>;
                 }
                 var clips_projects_map = L.map('projects_map');
@@ -312,7 +312,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 </table>
             </div>
             <script>
-                if (clips_projects == undefined) {
+                if (typeof clips_projects == 'undefined') {
                     clips_projects = <?php echo json_encode($projects); ?>;
                 }
                 jQuery(document).ready(function(){
@@ -356,7 +356,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             ?>
             <div id="events_map" style="height: <?php echo $a['height'];?>; width: <?php echo $a['width'];?>;"></div>
             <script>
-                if (clips_events == undefined) {
+                if (typeof clips_events == 'undefined') {
                     var clips_events = <?php echo json_encode($events); ?>;
                 }
                 var clips_events_map = L.map('events_map');
@@ -468,7 +468,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 </table>
             </div>
             <script>
-                if (clips_events == undefined) {
+                if (typeof clips_events == 'undefined') {
                     clips_events = <?php echo json_encode($events); ?>;
                 }
                 jQuery(document).ready(function(){
