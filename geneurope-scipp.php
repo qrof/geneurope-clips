@@ -14,7 +14,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
 {
     class WP_CLIPS_Plugin
     {
-        private static $cache_time = MINUTE_IN_SECONDS;
+        private static $cache_time = HOUR_IN_SECONDS;
 
         /**
          * Construct the plugin object
@@ -67,7 +67,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
         static function enqueue_scripts() {
             // include leaflet for maps
-            wp_enqueue_script('js-leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js');
+            wp_enqueue_script('js-mapbox', 'https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js');
             // include datatables for list
             wp_enqueue_script('js-datatables', '//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js', array( 'jquery' ) );
             // include js moment for datetime sorting
@@ -81,7 +81,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
         static function enqueue_assets() {
             // include leaflet for maps
-            wp_enqueue_style( 'leaflet', '//cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css' );
+            wp_enqueue_style( 'mapbox', 'https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' );
             wp_enqueue_style( 'clips-plugin', plugins_url( 'css/style.css', __FILE__ ) );
 
             wp_enqueue_style( 'datatables', '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css' );
@@ -199,12 +199,14 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 'width' => '100%'
             ), $atts );
 
-
             $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
 
             if( empty( $projects ) ) {
                 return;
             }
+
+            $clips_options = get_option( 'clips_options' );
+            $mapbox_token = $clips_options['mapbox_token'];
 
             ob_start();
             ?>
@@ -213,35 +215,35 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 if (typeof clips_projects == 'undefined') {
                     var clips_projects = <?php echo json_encode($projects); ?>;
                 }
-                var clips_projects_map = L.map('projects_map');
+                var clips_projects_map;
 
-                // create the tile layer with correct attribution
-                var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-                var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-                var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
-
-                // start the map
                 var locationEurope = new L.LatLng(47.626349,7.336981);
-                clips_projects_map.setView(locationEurope,4);
-                clips_projects_map.addLayer(osm);
+
+                L.mapbox.accessToken = '<?php echo $mapbox_token ?>';
+
+                if ( !L.mapbox.accessToken.trim() ) {
+                    // create the tile layer with correct attribution
+                    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+                    var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+
+                    var clips_projects_map = L.map('projects_map');
+                    clips_projects_map.setView(locationEurope,4);
+
+                    // start the map
+                    clips_projects_map.addLayer(osm);
+                }
+                else {
+                    clips_projects_map = L.mapbox.map('projects_map', 'mapbox.streets').setView(locationEurope, 4);
+                }
+
 
                 L.geoJson(clips_projects, {
                     style: function (feature) {
                         return {color: feature.properties.color};
                     },
-                    /*
-                    pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, {
-                            radius: 8,
-                            fillColor: feature.properties.color,
-                            color: "#000",
-                            weight: 1,
-                            opacity: 1,
-                            fillOpacity: 0.8
-                        });
-                    },*/
                     onEachFeature: function (feature, layer) {
-                        var popupContent = '<p><strong><a href="<?php echo get_site_url(); ?>' + feature.properties.uri + '/">' +
+                        var popupContent = '<p><strong><a href="<?php echo get_home_url(); ?>' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
 
                         if (feature.properties && feature.properties.abstract) {
@@ -255,13 +257,6 @@ if(!class_exists('WP_CLIPS_Plugin'))
                         return feature.properties.evolution > 0;
                     }*/
                 }).addTo(clips_projects_map);
-                /*
-                var overlayMaps = {
-                    "Cities": cities
-                };
-
-                L.control.layers(overlayMaps).addTo(clips_projects_map);
-                */
             </script>
             <?php
             return ob_get_clean();
@@ -296,7 +291,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     ?>
                         <tr>
                             <td>
-                                <span><a href="<?php echo get_site_url() . $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
+                                <span><a href="<?php echo get_home_url() . $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
                                 <br/>
                                 <span><?php echo trim($project->properties->abstract); ?></span>
                             </td>
@@ -344,13 +339,14 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 'width' => '100%'
             ), $atts );
 
-
             $events = WP_CLIPS_Plugin::get_remote_flow("events.json");
-
 
             if( empty( $events ) ) {
                 return;
             }
+
+            $clips_options = get_option( 'clips_options' );
+            $mapbox_token = $clips_options['mapbox_token'];
 
             ob_start();
             ?>
@@ -359,17 +355,27 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 if (typeof clips_events == 'undefined') {
                     var clips_events = <?php echo json_encode($events); ?>;
                 }
-                var clips_events_map = L.map('events_map');
+                var clips_events_map;
 
-                // create the tile layer with correct attribution
-                var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-                var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-                var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
-
-                // start the map
                 var locationEurope = new L.LatLng(47.626349,7.336981);
-                clips_events_map.setView(locationEurope, 4);
-                clips_events_map.addLayer(osm);
+
+                L.mapbox.accessToken = '<?php echo $mapbox_token ?>';
+
+                if ( !L.mapbox.accessToken.trim() ) {
+                    // create the tile layer with correct attribution
+                    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+                    var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+
+                    var clips_events_map = L.map('projects_map');
+                    clips_events_map.setView(locationEurope,4);
+
+                    // start the map
+                    clips_events_map.addLayer(osm);
+                }
+                else {
+                    clips_events_map = L.mapbox.map('events_map', 'mapbox.streets').setView(locationEurope, 4);
+                }
 
                 L.geoJson(clips_events, {
                     style: function (feature) {
@@ -393,7 +399,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                         var stop = new Date(feature.properties.stop);
                         stop = stop.toLocaleDateString() + ', ' + stop.toLocaleTimeString();
 
-                        var popupContent = '<p><strong><a href="<?php echo get_site_url(); ?>' + feature.properties.uri + '/">' +
+                        var popupContent = '<p><strong><a href="<?php echo get_home_url(); ?>' + feature.properties.uri + '/">' +
                             feature.properties.name + '</a></strong></p>';
 
                         popupContent += '<p>' + start + '&nbsp;-&nbsp;' + stop + '</p>';
@@ -452,7 +458,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                         <tr>
                             <td><?php echo date_i18n( get_option( 'date_format' ), strtotime( $event->properties->start ) ); ?></td>
                             <td>
-                                <span><a href="<?php echo get_site_url() . $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
+                                <span><a href="<?php echo get_home_url() . $event->properties->uri; ?>"><?php echo trim($event->properties->name); ?></a></span>
                                 <br/>
                                 <span><?php echo trim($event->properties->abstract); ?></span>
                             </td>

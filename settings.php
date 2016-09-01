@@ -47,6 +47,8 @@ class ScippSettingsPage
         ?>
         <div class="wrap">
             <h2>CLIPS Settings</h2>
+            <p>For API access URL, please contact GEN Europe at info@gen-europe.org.</p>
+            <p>To use Mapbox tiles instead of OpenStreeMap, please register at <a href="http://www.mapbox.com" target="_blank">www.mapbox.com</a>, visit the Studio area to get the Mapbox Access token and paste it into the field below.</p>
             <form method="post" action="options.php">
                 <?php
                 // This prints out all hidden setting fields
@@ -71,8 +73,15 @@ class ScippSettingsPage
         );
 
         add_settings_section(
-            'setting_section_id', // ID
-            'CLIPS Custom Settings', // Title
+            'setting_section_db', // ID
+            'CLIPS DB Settings', // Title
+            array( $this, 'print_section_info' ), // Callback
+            'clips-setting-admin' // Page
+        );
+
+        add_settings_section(
+            'setting_section_maps', // ID
+            'CLIPS Map Settings', // Title
             array( $this, 'print_section_info' ), // Callback
             'clips-setting-admin' // Page
         );
@@ -82,18 +91,18 @@ class ScippSettingsPage
             'API url',
             array( $this, 'api_url_callback' ),
             'clips-setting-admin',
-            'setting_section_id'
+            'setting_section_db'
         );
 
-        /*
+
         add_settings_field(
-            'id_number', // ID
-            'ID Number', // Title
-            array( $this, 'id_number_callback' ), // Callback
+            'mapbox_token', // ID
+            'Mapbox token', // Title
+            array( $this, 'mapbox_token_callback' ), // Callback
             'clips-setting-admin', // Page
-            'setting_section_id' // Section
+            'setting_section_maps' // Section
         );
-        */
+
 
     }
 
@@ -105,8 +114,8 @@ class ScippSettingsPage
     public function sanitize( $input )
     {
         $new_input = array();
-        if( isset( $input['id_number'] ) )
-            $new_input['id_number'] = absint( $input['id_number'] );
+        if( isset( $input['mapbox_token'] ) )
+            $new_input['mapbox_token'] = esc_attr( $input['mapbox_token'] );
 
         if( isset( $input['api_url'] ) )
             $new_input['api_url'] = esc_url_raw( $input['api_url'] );
@@ -125,11 +134,11 @@ class ScippSettingsPage
     /**
      * Get the settings option array and print one of its values
      */
-    public function id_number_callback()
+    public function mapbox_token_callback()
     {
         printf(
-            '<input type="text" id="id_number" name="clips_options[id_number]" value="%s" />',
-            isset( $this->options['id_number'] ) ? esc_attr( $this->options['id_number']) : ''
+            '<input type="text" id="mapbox_token" name="clips_options[mapbox_token]" value="%s" class="regular-text code"/>',
+            isset( $this->options['mapbox_token'] ) ? esc_attr( $this->options['mapbox_token']) : ''
         );
     }
 
