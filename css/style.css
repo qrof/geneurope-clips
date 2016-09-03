@@ -51,6 +51,14 @@
     .project, .event {
         padding: 0px;
     }
+
+    table.dataTable thead th.nowrap, table.dataTable tbody td.nowrap {
+        white-space: nowrap;
+    }
+
+    table.dataTable tbody td.right {
+        text-align: right;
+    }
 }
 
 /* Large Devices, Wide Screens */

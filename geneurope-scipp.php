@@ -290,7 +290,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     <thead>
                     <tr>
                         <th>Project</th>
-                        <th>Location</th>
+                        <th class="nowrap">Status</th>
+                        <th class="nowrap">Location</th>
                     </tr>
                     </thead>
                     <tbody>
