@@ -79,7 +79,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             wp_enqueue_script('js-datatables-moment', '//cdn.datatables.net/plug-ins/1.10.12/sorting/datetime-moment.js', array( 'jquery', 'js-moment', 'js-datatables' ) );
 
             wp_enqueue_script( 'js-clips-plugin', plugins_url( 'js/clips.js', __FILE__ ) );
-            wp_enqueue_script( 'js-clips-options', '?clips-options=1' );
+            //wp_enqueue_script( 'js-clips-options', '?clips-options=1' );
 
 
         }
