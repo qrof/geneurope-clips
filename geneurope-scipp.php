@@ -25,6 +25,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             if( is_admin() ) {
                 require_once(sprintf("%s/settings.php", dirname(__FILE__)));
                 $clips_settings_page = new ScippSettingsPage();
+                $clips_settings_page = new ClipsSettingsPage();
             }
 
             // register actions

@@ -1,12 +1,9 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: marko
- * Date: 29. 06. 16
- * Time: 20:37
+ * Clips Settings Class - Page
  */
 
-class ScippSettingsPage
+class ClipsSettingsPage
 {
     /**
      * Holds the values to be used in the fields callbacks
