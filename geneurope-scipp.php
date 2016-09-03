@@ -27,6 +27,9 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 $clips_settings_page = new ClipsSettingsPage();
             }
 
+            //include country codes
+            require_once(sprintf("%s/countrycodes_iso3166.php", dirname(__FILE__)));
+
             // register actions
             //if( !is_admin() ) {
             add_action('wp_enqueue_scripts', array('WP_CLIPS_Plugin', 'enqueue_scripts'));
@@ -297,7 +300,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                             </td>
                             <td><?php
                                 echo (!empty($project->properties->address) ? trim($project->properties->address->city) : "" );
-                                echo (!empty($project->properties->address->countryCode) ? ", " . trim($project->properties->address->countryCode) : "" );
+                                echo (!empty($project->properties->address->countryCode) ? ", " . WP_CLIPS_Countries::getCountry(trim($project->properties->address->countryCode)) : "" );
                                 ?></td>
                         </tr>
                     <?php
@@ -464,7 +467,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                             </td>
                             <td><?php
                                 echo (!empty($event->properties->address) ? trim($event->properties->address->city) : "" );
-                                echo (!empty($event->properties->address->countryCode) ? ", " . trim($event->properties->address->countryCode) : "" );
+                                echo (!empty($event->properties->address->countryCode) ? ", " . WP_CLIPS_Countries::getCountry(trim($event->properties->address->countryCode)) : "" );
                                 ?></td>
                         </tr>
                         <?php
