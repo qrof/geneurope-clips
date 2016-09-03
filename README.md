@@ -8,6 +8,9 @@ Uses:
 - datatables (http://datatables.net)
 - moment js (http://momentjs.com) + plugin for datatables (https://datatables.net/plug-ins/sorting/datetime-moment)
 
+Optional:
+- MapBox (http://www.mapbox.com) - an access token is needed, which you can get when you register an account.
+
 In order to use the plugin, you must enter API url in CLIPS Settings page. Can only use specific API based on GeoJSON format.
 
 When adding the shortcodes, be careful not to wrap them in PRE html tags (when using Visual view; check Text view that they are not present)
