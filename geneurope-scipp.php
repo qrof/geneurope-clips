@@ -103,6 +103,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     return $category;
                 }
             }
+            return "";
         }
 
         private static function get_interactions(){
@@ -116,6 +117,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     return $interaction;
                 }
             }
+            return "";
         }
 
         private static function get_evolutions(){
@@ -129,6 +131,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     return $evolution;
                 }
             }
+            return "";
         }
 
         static function get_remote_flow( $path ) {
@@ -300,7 +303,10 @@ if(!class_exists('WP_CLIPS_Plugin'))
                                 <br/>
                                 <span><?php echo trim($project->properties->abstract); ?></span>
                             </td>
-                            <td><?php
+                            <td class="nowrap">
+                                <span><?php echo (!empty($project->properties->evolution) ? WP_CLIPS_Plugin::get_evolution($project->properties->evolution)->name : ""); ?></span>
+                            </td>
+                            <td class="nowrap right"><?php
                                 echo (!empty($project->properties->address) ? trim($project->properties->address->city) : "" );
                                 echo (!empty($project->properties->address->countryCode) ? ", " . WP_CLIPS_Countries::getCountry(trim($project->properties->address->countryCode)) : "" );
                                 ?></td>
