@@ -175,9 +175,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
                 return $event;
             }
-            else {
-                wp_die("Event not found.");
-            }
+            wp_die("Event not found.");
         }
 
         public static function get_project_fromurl() {
@@ -195,9 +193,9 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
                 return $project;
             }
-            else {
-                wp_die("Project not found.");
-            }
+
+            wp_die("Project not found.");
+
         }
 
         // [clips_projects_map width="100%" height="400px"]
@@ -235,7 +233,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
                     var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
-                    var clips_projects_map = L.map('projects_map');
+                    clips_projects_map = L.map('projects_map');
                     clips_projects_map.setView(locationEurope,4);
 
                     // start the map
@@ -280,7 +278,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
 
             if( empty( $projects ) ) {
-                return;
+                return "";
             }
 
             ob_start();
@@ -354,7 +352,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             $events = WP_CLIPS_Plugin::get_remote_flow("events.json");
 
             if( empty( $events ) ) {
-                return;
+                return "";
             }
 
             $clips_options = get_option( 'clips_options' );
@@ -379,7 +377,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
                     var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
 
-                    var clips_events_map = L.map('projects_map');
+                    clips_events_map = L.map('projects_map');
                     clips_events_map.setView(locationEurope,4);
 
                     // start the map
@@ -449,7 +447,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             $events = WP_CLIPS_Plugin::get_remote_flow("events.json");
 
             if( empty( $events ) ) {
-                return;
+                return "";
             }
 
             ob_start();
