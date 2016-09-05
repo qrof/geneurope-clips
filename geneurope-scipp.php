@@ -110,6 +110,23 @@ if(!class_exists('WP_CLIPS_Plugin'))
             return WP_CLIPS_Plugin::get_remote_flow("admin/interactions");
         }
 
+        public static function display_interactions( $id_array ){
+            $interactions = WP_CLIPS_Plugin::get_interactions();
+            $response_array = array();
+            foreach ($interactions as $interaction){
+                foreach ( $id_array as $id) {
+                    if ( $interaction->id == $id && $interaction->selectable == true ){
+                        array_push($response_array, $interaction->name);
+                    }
+                }
+            }
+            if ( !empty($response_array) ) {
+                return implode(", ", $response_array);
+            }
+
+            return "";
+        }
+
         public static function get_interaction( $id ){
             $interactions = WP_CLIPS_Plugin::get_interactions();
             foreach ($interactions as $interaction){
@@ -288,7 +305,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     <thead>
                     <tr>
                         <th>Project</th>
-                        <th class="nowrap">Status</th>
+                        <th>Interactions</th>
                         <th class="nowrap">Location</th>
                     </tr>
                     </thead>
@@ -300,10 +317,12 @@ if(!class_exists('WP_CLIPS_Plugin'))
                             <td>
                                 <span><a href="<?php echo get_home_url() . $project->properties->uri; ?>"><?php echo trim($project->properties->name); ?></a></span>
                                 <br/>
+                                <?php echo (!empty($project->properties->evolution) ? "(" . WP_CLIPS_Plugin::get_evolution($project->properties->evolution)->name . ")" : ""); ?>
+                                <br/>
                                 <span><?php echo trim($project->properties->abstract); ?></span>
                             </td>
-                            <td class="nowrap">
-                                <span><?php echo (!empty($project->properties->evolution) ? WP_CLIPS_Plugin::get_evolution($project->properties->evolution)->name : ""); ?></span>
+                            <td>
+                                <span><?php echo (!empty($project->properties->interactions) ? WP_CLIPS_Plugin::display_interactions($project->properties->interactions) : ""); ?></span>
                             </td>
                             <td class="nowrap right"><?php
                                 echo (!empty($project->properties->address) ? trim($project->properties->address->city) : "" );
