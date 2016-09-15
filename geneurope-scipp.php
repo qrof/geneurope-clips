@@ -24,7 +24,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             // Initialize Settings
             if( is_admin() ) {
                 require_once(sprintf("%s/settings.php", dirname(__FILE__)));
-                new ClipsSettingsPage();
+                new WP_CLIPS_Settings();
             }
 
             //include country codes

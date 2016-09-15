@@ -3,8 +3,8 @@
  * Clips Settings Class - Page
  */
 
-if(!class_exists('WP_CLIPS_Plugin')) {
-    class ClipsSettingsPage
+if(!class_exists('WP_CLIPS_Settings')) {
+    class WP_CLIPS_Settings
     {
         /**
          * Holds the values to be used in the fields callbacks
