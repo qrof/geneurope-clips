@@ -285,10 +285,9 @@ if(!class_exists('WP_CLIPS_Plugin'))
             return ob_get_clean();
         }
 
-        // [clips_projects_list width="100%" height="400px"]
+        // [clips_projects_list width="100%"]
         public static function projects_list_func( $atts ) {
             $a = shortcode_atts( array(
-                'height' => '400px',
                 'width' => '100%',
             ), $atts );
 
@@ -456,10 +455,9 @@ if(!class_exists('WP_CLIPS_Plugin'))
             return ob_get_clean();
         }
 
-        // [clips_events_list width="100%" height="400px"]
+        // [clips_events_list width="100%"]
         public static function events_list_func( $atts ) {
             $a = shortcode_atts( array(
-                'height' => '400px',
                 'width' => '100%',
             ), $atts );
 

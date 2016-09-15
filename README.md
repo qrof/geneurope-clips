@@ -21,7 +21,7 @@ When adding the shortcodes, be careful not to wrap them in PRE html tags (when u
 
 ## Add projects list
 
-[clips_projects_list width="100%" height="400px"]
+[clips_projects_list width="100%"]
 
 ## Add events map
 
@@ -29,4 +29,8 @@ When adding the shortcodes, be careful not to wrap them in PRE html tags (when u
 
 ## Add events list
 
-[clips_events_list width="100%" height="400px"]
+[clips_events_list width="100%"]
+
+## Add resources list
+
+[clips_resources_list width="100%" height="400px"]
