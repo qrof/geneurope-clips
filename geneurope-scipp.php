@@ -177,6 +177,43 @@ if(!class_exists('WP_CLIPS_Plugin'))
             return $data;
         }
 
+        static function get_remote_webdav( $path = '' ) {
+            // get api url from options - need to enter it!
+            $clips_options = get_option( 'clips_options' );
+            $webdav_url = !empty( $clips_options['webdav_url'] ) ? esc_url( $clips_options['webdav_url']) : '';
+            $webdav_username = !empty( $clips_options['webdav_username'] ) ? esc_attr( $clips_options['webdav_username']) : '';
+            $webdav_password = !empty( $clips_options['webdav_password'] ) ? esc_attr( $clips_options['webdav_password']) : '';
+
+            if( empty($path) ) {
+                $path = $webdav_url;
+            }
+
+            $data = get_transient( 'clips_' . $path );
+            if( empty( $data ) ) {
+                $response = wp_remote_request( $path, array( 'method' => 'PROPFIND', 'decompress' => false, 'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $webdav_username . ':' . $webdav_password )
+                ) ) );
+                var_dump($response);
+                if( is_wp_error( $response ) ) {
+                    return array();
+                }
+
+                $data = wp_remote_retrieve_body( $response );
+                if( empty( $data ) ) {
+                    return array();
+                }
+
+                set_transient( 'clips_' . $path , $data, WP_CLIPS_Plugin::$cache_time );
+            }
+
+            $xml = simplexml_load_string( str_replace( 'd:', '', $data) );
+            var_dump($xml->xpath('//response') );
+            foreach ($xml->xpath('//response') as $asset) {
+                echo $asset->href, ', ', PHP_EOL;
+            }
+
+            return $data;
+        }
+
         public static function get_event_fromurl() {
             if ( get_query_var( 'clips-event' ) ) {
                 $event_id = get_query_var('clips-event');
@@ -223,6 +260,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
             ), $atts );
 
             $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
+
+            WP_CLIPS_Plugin::get_remote_webdav();
 
             if( empty( $projects ) ) {
                 return;
