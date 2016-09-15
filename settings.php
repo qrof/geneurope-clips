@@ -89,7 +89,7 @@ if(!class_exists('WP_CLIPS_Settings')) {
             add_settings_section(
                 'setting_section_webdav', // ID
                 'CLIPS WebDAV Settings', // Title
-                array($this, 'print_section_info'), // Callback
+                array($this, 'print_section_info_webdav'), // Callback
                 'clips-setting-admin' // Page
             );
 
@@ -168,6 +168,15 @@ if(!class_exists('WP_CLIPS_Settings')) {
         {
             print 'Enter your settings below:';
         }
+
+        /**
+         * Print the Section text for WebDAV
+         */
+        public function print_section_info_webdav()
+        {
+            print 'Enter your WebDAV / ownCloud settings below (URL should contain the base folder for display):';
+        }
+
 
         /**
          * Get the settings option array and print one of its values
