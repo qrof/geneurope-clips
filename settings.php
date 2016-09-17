@@ -147,10 +147,10 @@ if(!class_exists('WP_CLIPS_Settings')) {
             if (isset($input['mapbox_token']))
                 $new_input['mapbox_token'] = esc_attr($input['mapbox_token']);
 
-            if (isset($input['api_url']))
+            if (isset($input['api_url']) && wp_parse_url($input['api_url']))
                 $new_input['api_url'] = esc_url_raw($input['api_url']);
 
-            if (isset($input['webdav_url']))
+            if (isset($input['webdav_url']) && wp_parse_url($input['webdav_url']) )
                 $new_input['webdav_url'] = esc_url_raw($input['webdav_url']);
             if (isset($input['webdav_username']))
                 $new_input['webdav_username'] = esc_attr($input['webdav_username']);

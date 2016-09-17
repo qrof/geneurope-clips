@@ -47,6 +47,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
             add_shortcode( 'clips_projects_list', array('WP_CLIPS_Plugin', 'projects_list_func'));
             add_shortcode( 'clips_events_map', array('WP_CLIPS_Plugin', 'events_map_func'));
             add_shortcode( 'clips_events_list', array('WP_CLIPS_Plugin', 'events_list_func'));
+            add_shortcode( 'clips_resource_list', array('WP_CLIPS_Plugin', 'resource_list_func'));
+
             //}
         } // END public function __construct
 
@@ -177,22 +179,72 @@ if(!class_exists('WP_CLIPS_Plugin'))
             return $data;
         }
 
-        static function get_remote_webdav( $path = '' ) {
+        static function get_webdav_resource( $url = '' )
+        {
+            // get api url from options - need to enter it!
+            $clips_options = get_option('clips_options');
+            $webdav_url = !empty($clips_options['webdav_url']) ? esc_url($clips_options['webdav_url']) : '';
+            $webdav_username = !empty($clips_options['webdav_username']) ? esc_attr($clips_options['webdav_username']) : '';
+            $webdav_password = !empty($clips_options['webdav_password']) ? esc_attr($clips_options['webdav_password']) : '';
+
+            $url = '/' . ltrim($url, '/');
+            $url = $webdav_url . $url;
+
+
+            $pathinfo = pathinfo($url);
+            if (isset($pathinfo['extension'])) {
+                $response = wp_remote_get($url, array('headers' => array('Authorization' => 'Basic ' . base64_encode($webdav_username . ':' . $webdav_password)
+                )));
+
+                if (is_wp_error($response)) {
+                    wp_die("Resource not found.");
+                }
+
+                if (is_array($response)) {
+                    $header = $response['headers']; // array of http header lines
+                    $body = $response['body']; // use the content
+
+                    if (isset($header['set-cookie'])) {
+                        unset($header['set-cookie']);
+                    }
+                    if (isset($header['x-powered-by'])) {
+                        unset($header['x-powered-by']);
+                    }
+                    if (isset($header['content-disposition'])) {
+                        unset($header['content-disposition']);
+                    }
+
+                    header("Content-Disposition: attachment; filename=".$pathinfo['basename']);
+
+                    foreach ($header as $name => $value) {
+                        header($name . ': ' . $value);
+                    }
+                    flush();
+                    echo $body;
+                    die();
+                }
+            }
+        }
+
+        static function get_webdav_resourcelist( $url = '' ) {
             // get api url from options - need to enter it!
             $clips_options = get_option( 'clips_options' );
             $webdav_url = !empty( $clips_options['webdav_url'] ) ? esc_url( $clips_options['webdav_url']) : '';
             $webdav_username = !empty( $clips_options['webdav_username'] ) ? esc_attr( $clips_options['webdav_username']) : '';
             $webdav_password = !empty( $clips_options['webdav_password'] ) ? esc_attr( $clips_options['webdav_password']) : '';
 
-            if( empty($path) ) {
-                $path = $webdav_url;
+            if( empty($url) ) {
+                $url = $webdav_url;
+            } else {
+                $url = '/' . ltrim($url, '/') ;
+                $url = $webdav_url . $url;
             }
 
-            $data = get_transient( 'clips_' . $path );
+            $data = get_transient( 'clips_' . $url );
             if( empty( $data ) ) {
-                $response = wp_remote_request( $path, array( 'method' => 'PROPFIND', 'decompress' => false, 'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $webdav_username . ':' . $webdav_password )
+                $response = wp_remote_request( $url, array( 'method' => 'PROPFIND', 'decompress' => false, 'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $webdav_username . ':' . $webdav_password )
                 ) ) );
-                var_dump($response);
+
                 if( is_wp_error( $response ) ) {
                     return array();
                 }
@@ -202,16 +254,34 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     return array();
                 }
 
-                set_transient( 'clips_' . $path , $data, WP_CLIPS_Plugin::$cache_time );
+                // simplify xml definition
+                $data = str_replace( 'd:', '', $data);
+
+                set_transient( 'clips_' . $url , $data, WP_CLIPS_Plugin::$cache_time );
             }
 
             $xml = simplexml_load_string( str_replace( 'd:', '', $data) );
-            var_dump($xml->xpath('//response') );
+
+            $path = wp_parse_url($webdav_url, PHP_URL_PATH);
+
             foreach ($xml->xpath('//response') as $asset) {
-                echo $asset->href, ', ', PHP_EOL;
+                $href = str_replace($path, '/resources', $asset->href);
+                $name = pathinfo($href)['basename'];
+                $modified = $asset->propstat->prop->getlastmodified;
+
+                if ($asset->propstat->prop->resourcetype->collection) {
+                    $size = $asset->propstat->prop->{'quota-used-bytes'};
+                    $assets[] = array("mime-type"=>"folder", "name"=>$name, "uri"=>$href, "last-modified"=>$modified, "size"=>$size);
+                }
+                else {
+                    $contenttype = $asset->propstat->prop->getcontenttype;
+                    $contenttype = explode('/', $contenttype)[1];
+                    $size = $asset->propstat->prop->getcontentlength;
+                    $assets[] = array("mime-type"=>$contenttype, "name"=>$name, "uri"=>$href, "last-modified"=>$modified, "size"=>$size);
+                }
             }
 
-            return $data;
+            return $assets;
         }
 
         public static function get_event_fromurl() {
@@ -260,8 +330,6 @@ if(!class_exists('WP_CLIPS_Plugin'))
             ), $atts );
 
             $projects = WP_CLIPS_Plugin::get_remote_flow("projects.json");
-
-            WP_CLIPS_Plugin::get_remote_webdav();
 
             if( empty( $projects ) ) {
                 return;
@@ -393,6 +461,71 @@ if(!class_exists('WP_CLIPS_Plugin'))
                         } ]
                     });*/
                     jQuery('#projects_list').DataTable();
+                });
+            </script>
+            <?php
+            return ob_get_clean();
+        }
+
+        // [clips_resource_list width="100%"]
+        public static function resource_list_func( $atts ) {
+            $a = shortcode_atts( array(
+                'width' => '100%',
+            ), $atts );
+
+            $path = get_query_var( 'clips-resource' );
+            $assets = WP_CLIPS_Plugin::get_webdav_resourcelist( $path );
+
+            if( empty( $assets ) ) {
+                return "";
+            }
+
+            ob_start();
+            ?>
+            <div id="resource_list_wrapper">
+                <table id="resource_list"  style="width: <?php echo $a['width'];?>;">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>File</th>
+                        <th class="nowrap">Size</th>
+                        <th class="nowrap">Last modified</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    array_shift($assets);
+                    foreach( $assets as $asset ) {
+                        $name = urldecode($asset['name']);
+                        $img = wp_mime_type_icon('default');
+                        if ( !empty($asset['mime-type'])) {
+                            $img = wp_mime_type_icon($asset['mime-type']);
+                        }
+                        ?>
+                        <tr>
+                            <td><span class="media-icon image-icon"><img width="12" height="16" class="size-12x16" src="<?php echo $img; ?>" title="<?php echo $asset['mime-type']; ?>" /></span>
+                            </td>
+                            <td>
+                                <span><a href="<?php echo $asset['uri']; ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a></span>
+                            </td>
+                            <td class="nowrap right"><?php echo size_format($asset['size']); ?></td>
+                            <td class="nowrap right"><?php echo date_i18n( get_option( 'date_format' ), strtotime($asset['last-modified'])); ?></td>
+
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+            <script>
+                if (typeof clips_resources == 'undefined') {
+                    clips_resources = <?php echo json_encode($assets); ?>;
+                }
+                jQuery(document).ready(function(){
+                    jQuery('#resource_list').DataTable({
+                        paging: false
+                    });
                 });
             </script>
             <?php
@@ -559,12 +692,14 @@ if(!class_exists('WP_CLIPS_Plugin'))
             $vars[] = 'clips-event';
             $vars[] = 'clips-lang';
             $vars[] = 'clips-options';
+            $vars[] = 'clips-resource';
             return $vars;
         }
 
         public static function rewrite_rules() {
             add_rewrite_rule( 'projects/([^/]+)/([^/]+)/?$', 'index.php?clips-project=$matches[2]&clips-lang=$matches[1]', 'top' );
             add_rewrite_rule( 'events/([^/]+)/([^/]+)/?$', 'index.php?clips-event=$matches[2]&clips-lang=$matches[1]', 'top' );
+            add_rewrite_rule( 'resources/(.*)?$', 'index.php?clips-resource=$matches[1]', 'top' );
         }
 
         static function output_options() {
@@ -599,6 +734,12 @@ if(!class_exists('WP_CLIPS_Plugin'))
             if ( get_query_var( 'clips-event' ) ) {
                 add_filter( 'template_include', function() {
                     return plugin_dir_path( __FILE__ ) . 'event.php';
+                });
+            }
+
+            if ( get_query_var( 'clips-resource' ) ) {
+                add_filter( 'template_include', function() {
+                    return plugin_dir_path( __FILE__ ) . 'resource.php';
                 });
             }
         }

@@ -31,6 +31,6 @@ When adding the shortcodes, be careful not to wrap them in PRE html tags (when u
 
 [clips_events_list width="100%"]
 
-## Add resources list
+## Add resource list
 
-[clips_resources_list width="100%" height="400px"]
+[clips_resource_list width="100%"]
