@@ -19,7 +19,7 @@ get_header();
         <article id="post-<?php echo $pathinfo['basename']; ?>" <?php post_class("resource prk_inner_block twelve columns centered", null); ?>>
 
             <header class="entry-header bd_headings_text_shadow zero_color">
-                <div class="prk_titlify_father"><h1 class="entry-title header_font"><a href="../"><?php echo urldecode($pathinfo['dirname']); ?></a><?php echo ' / '. urldecode($pathinfo['basename']); ?></h1></div>
+                <div class="prk_titlify_father"><h1 class="entry-title header_font"><a href="../"><?php echo str_replace('.', '..', urldecode($pathinfo['dirname'])); ?></a><?php echo ' / '. urldecode($pathinfo['basename']); ?></h1></div>
             </header><!-- .entry-header -->
 
             <div class="entry-content">
