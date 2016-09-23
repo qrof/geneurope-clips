@@ -33,4 +33,16 @@ When adding the shortcodes, be careful not to wrap them in PRE html tags (when u
 
 ## Add resource list
 
+In settings you need to add WebDAV (ownCloud / Nextcloud) URL and username & password.
+
+Show root folder resource list:
+
 [clips_resource_list width="100%"]
+
+Show folder resource list (folder name is appended to the root folder defined in settings):
+
+[clips_resource_list width="100%" folder="{folder name}"]
+
+## Caching
+
+Default caching for resources uses Wordpress Transient API and is set to 15 minutes.

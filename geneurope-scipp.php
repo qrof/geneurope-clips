@@ -14,7 +14,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
 {
     class WP_CLIPS_Plugin
     {
-        private static $cache_time = HOUR_IN_SECONDS;
+        private static $cache_time = 15 * MINUTE_IN_SECONDS;
+        private static $cache_time_webdav = 15 * MINUTE_IN_SECONDS;
 
         /**
          * Construct the plugin object
@@ -162,6 +163,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 // trim and add trailing slash
                 $api_url = rtrim($api_url, '/') . '/';
 
+                $api_url = esc_url($api_url);
+
                 $response = wp_remote_get( $api_url . $path, array( 'decompress' => false, 'headers'     => array( 'Accept' => 'application/json', 'Accept-Language' => get_locale()), ) );
                 if( is_wp_error( $response ) ) {
                     return array();
@@ -240,6 +243,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 $url = $webdav_url . $url;
             }
 
+            $url = esc_url($url);
+
             $data = get_transient( 'clips_' . $url );
             if( empty( $data ) ) {
                 $response = wp_remote_request( $url, array( 'method' => 'PROPFIND', 'decompress' => false, 'headers' => array( 'Authorization' => 'Basic ' . base64_encode( $webdav_username . ':' . $webdav_password )
@@ -257,7 +262,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 // simplify xml definition
                 $data = str_replace( 'd:', '', $data);
 
-                set_transient( 'clips_' . $url , $data, WP_CLIPS_Plugin::$cache_time );
+                set_transient( 'clips_' . $url , $data, WP_CLIPS_Plugin::$cache_time_webdav );
             }
 
             $xml = simplexml_load_string( str_replace( 'd:', '', $data) );
@@ -471,9 +476,13 @@ if(!class_exists('WP_CLIPS_Plugin'))
         public static function resource_list_func( $atts ) {
             $a = shortcode_atts( array(
                 'width' => '100%',
+                'folder' => ''
             ), $atts );
 
             $path = get_query_var( 'clips-resource' );
+            if ( empty($path) ) {
+                $path = $a['folder'];
+            }
             $assets = WP_CLIPS_Plugin::get_webdav_resourcelist( $path );
 
             if( empty( $assets ) ) {
