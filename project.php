@@ -198,47 +198,60 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
                             <div class="project-thumbnail"><img class="project-thumbnail-image" src="<?php echo $p->properties->thumbnail; ?>"/></div>
                             <?php
                             }
+
+                            $clips_options = get_option( 'clips_options' );
+                            $mapbox_token = $clips_options['mapbox_token'];
+
                             ?>
                             <div id="project-map"></div>
                             <script>
                                 var clips_project = <?php echo json_encode($p); ?>;
                                 
-                                var clips_project_map = L.map('project-map');
-
-                                // create the tile layer with correct attribution
-                                var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-                                var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-                                var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+                                var clips_project_map;
 
                                 // start the map
-                                var coords;
+                                var coords = new L.LatLng(47.626349,7.336981); //Europe
+
                                 for (var i in clips_project.geometry.geometries ) {
                                     if ( clips_project.geometry.geometries[i].type == "Point" ) {
                                         coords = clips_project.geometry.geometries[i].coordinates;
+                                        coords = new L.LatLng(coords[1],coords[0]);
                                         break;
                                     }
                                 }
-                                if ( coords != undefined ) {
-                                    clips_project_map.setView(new L.LatLng(coords[1],coords[0]),9);
+
+                                L.mapbox.accessToken = '<?php echo $mapbox_token ?>';
+                                if ( !L.mapbox.accessToken.trim() ) {
+                                    // create the tile layer with correct attribution
+                                    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                                    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+                                    var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+
+                                    clips_project_map = L.map('project-map');
+                                    clips_project_map.setView(coords,9);
                                     clips_project_map.addLayer(osm);
-
-                                    L.geoJson(clips_project, {
-                                        style: function (feature) {
-                                            return {color: feature.properties.color};
-                                        },
-                                        onEachFeature: function (feature, layer) {
-                                            var popupContent = '<p><strong>' +
-                                                feature.properties.name + '</strong></p>';
-
-                                            if (feature.properties && feature.properties.abstract) {
-                                                popupContent += '<p>' + feature.properties.abstract + '</p>';
-                                            }
-
-                                            layer.bindPopup(popupContent);
-                                        }
-                                    }).addTo(clips_project_map);
-
                                 }
+                                else {
+                                    clips_project_map = L.mapbox.map('project-map', 'mapbox.streets').setView(coords, 12);
+                                }
+
+                                L.geoJson(clips_project, {
+                                    style: function (feature) {
+                                        return {color: feature.properties.color};
+                                    },
+                                    onEachFeature: function (feature, layer) {
+                                        var popupContent = '<p><strong>' +
+                                            feature.properties.name + '</strong></p>';
+
+                                        if (feature.properties && feature.properties.abstract) {
+                                            popupContent += '<p>' + feature.properties.abstract + '</p>';
+                                        }
+
+                                        layer.bindPopup(popupContent);
+                                    }
+                                }).addTo(clips_project_map);
+
+
 
                             </script>
                         </div>

@@ -189,47 +189,59 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
                                     <div class="event-thumbnail"><img class="event-thumbnail-image" src="<?php echo $e->properties->thumbnail; ?>"/></div>
                                     <?php
                                 }
+
+                                $clips_options = get_option( 'clips_options' );
+                                $mapbox_token = $clips_options['mapbox_token'];
+
                                 ?>
                                 <div id="event-map"></div>
                                 <script>
                                     var clips_event = <?php echo json_encode($e); ?>;
 
-                                    var clips_event_map = L.map('event-map');
-
-                                    // create the tile layer with correct attribution
-                                    var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-                                    var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-                                    var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+                                    var clips_event_map;
 
                                     // start the map
-                                    var coords;
+                                    var coords = new L.LatLng(47.626349,7.336981); //Europe
+
                                     for (var i in clips_event.geometry.geometries ) {
                                         if ( clips_event.geometry.geometries[i].type == "Point" ) {
                                             coords = clips_event.geometry.geometries[i].coordinates;
+                                            coords = new L.LatLng(coords[1],coords[0]);
                                             break;
                                         }
                                     }
-                                    if ( coords != undefined ) {
-                                        clips_event_map.setView(new L.LatLng(coords[1],coords[0]),9);
+
+                                    L.mapbox.accessToken = '<?php echo $mapbox_token ?>';
+                                    if ( !L.mapbox.accessToken.trim() ) {
+                                        // create the tile layer with correct attribution
+                                        var osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                                        var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+                                        var osm = new L.TileLayer(osmUrl, {minZoom: 4, maxZoom: 12, attribution: osmAttrib});
+
+                                        clips_event_map = L.map('event-map');
+                                        clips_event_map.setView(coords,9);
                                         clips_event_map.addLayer(osm);
-
-                                        L.geoJson(clips_event, {
-                                            style: function (feature) {
-                                                return {color: feature.properties.color};
-                                            },
-                                            onEachFeature: function (feature, layer) {
-                                                var popupContent = '<p><strong>' +
-                                                    feature.properties.name + '</strong></p>';
-
-                                                if (feature.properties && feature.properties.abstract) {
-                                                    popupContent += '<p>' + feature.properties.abstract + '</p>';
-                                                }
-
-                                                layer.bindPopup(popupContent);
-                                            }
-                                        }).addTo(clips_event_map);
-
                                     }
+                                    else {
+                                        clips_event_map = L.mapbox.map('event-map', 'mapbox.streets').setView(coords, 12);
+                                    }
+
+                                    L.geoJson(clips_event, {
+                                        style: function (feature) {
+                                            return {color: feature.properties.color};
+                                        },
+                                        onEachFeature: function (feature, layer) {
+                                            var popupContent = '<p><strong>' +
+                                                feature.properties.name + '</strong></p>';
+
+                                            if (feature.properties && feature.properties.abstract) {
+                                                popupContent += '<p>' + feature.properties.abstract + '</p>';
+                                            }
+
+                                            layer.bindPopup(popupContent);
+                                        }
+                                    }).addTo(clips_event_map);
+
 
                                 </script>
                             </div>
