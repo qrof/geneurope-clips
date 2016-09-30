@@ -492,7 +492,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
             ob_start();
             ?>
             <div class="resource_list_wrapper">
-                <table class="resource_list"  style="width: <?php echo $a['width'];?>;">
+                <table id="resource_list_<?php echo urlencode($path);?>"  style="width: <?php echo $a['width'];?>;">
                     <thead>
                     <tr>
                         <th></th>
@@ -528,11 +528,11 @@ if(!class_exists('WP_CLIPS_Plugin'))
                 </table>
             </div>
             <script>
-                if (typeof clips_resources == 'undefined') {
-                    clips_resources = <?php echo json_encode($assets); ?>;
+                if (typeof clips_resources_<?php echo urlencode($path);?> == 'undefined') {
+                    clips_resources_<?php echo urlencode($path);?> = <?php echo json_encode($assets); ?>;
                 }
                 jQuery(document).ready(function(){
-                    jQuery('.resource_list').DataTable({
+                    jQuery('#resource_list_<?php echo urlencode($path);?>').DataTable({
                         paging: false
                     });
                 });
