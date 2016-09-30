@@ -491,8 +491,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
 
             ob_start();
             ?>
-            <div id="resource_list_wrapper">
-                <table id="resource_list"  style="width: <?php echo $a['width'];?>;">
+            <div class="resource_list_wrapper">
+                <table class="resource_list"  style="width: <?php echo $a['width'];?>;">
                     <thead>
                     <tr>
                         <th></th>
@@ -517,8 +517,8 @@ if(!class_exists('WP_CLIPS_Plugin'))
                             <td>
                                 <span><a href="<?php echo $asset['uri']; ?>" title="<?php echo $name; ?>"><?php echo $name; ?></a></span>
                             </td>
-                            <td class="nowrap right"><?php echo size_format($asset['size']); ?></td>
-                            <td class="nowrap right"><?php echo date_i18n( get_option( 'date_format' ), strtotime($asset['last-modified'])); ?></td>
+                            <td class="nowrap filesize"><?php echo size_format($asset['size']); ?></td>
+                            <td class="nowrap date"><?php echo date_i18n( get_option( 'date_format' ), strtotime($asset['last-modified'])); ?></td>
 
                         </tr>
                         <?php
@@ -532,7 +532,7 @@ if(!class_exists('WP_CLIPS_Plugin'))
                     clips_resources = <?php echo json_encode($assets); ?>;
                 }
                 jQuery(document).ready(function(){
-                    jQuery('#resource_list').DataTable({
+                    jQuery('.resource_list').DataTable({
                         paging: false
                     });
                 });

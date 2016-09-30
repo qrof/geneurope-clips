@@ -56,7 +56,7 @@
         white-space: nowrap;
     }
 
-    table.dataTable tbody td.right {
+    table.dataTable tbody td.right, table td.filesize, table td.date {
         text-align: right;
     }
 }
