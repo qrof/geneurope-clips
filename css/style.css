@@ -6,15 +6,26 @@
         padding-top: 60px;
     }
 
-    .project-details-left, .event-details-left, .project-details-right, .event-details-right {
+    .project .entry-content, .event .entry-content {
         width: 100%;
     }
 
-    #prk_ajax_container .project-details-left, #prk_ajax_container .event-details-left,
-    #prk_ajax_container .project-details-right, #prk_ajax_container .event-details-right {
+    #project-details, #event-details {
         width: 100%;
-        padding-left: 10px;
-        padding-right: 20px;
+        display: table;
+    }
+
+    .project-details-left, .event-details-left {
+        width: 100%
+    }
+    .project-details-left, .event-details-left, .project-details-right, .event-details-right {
+        display: table-cell;
+        padding: 2px 6px;
+        vertical-align: top;
+    }
+
+    .project-details-right, .event-details-right {
+        white-space: nowrap;
     }
 
 }
@@ -30,20 +41,6 @@
         padding: 0px 10px 0 10px;
     }
 
-    .project-details-left, .event-details-left,
-    #prk_ajax_container .project-details-left, #prk_ajax_container .event-details-left {
-        width: 57%;
-        padding-right: 0px;
-        padding-left: 0px;
-
-    }
-
-    .project-details-right, .event-details-right,
-    #prk_ajax_container .project-details-right, #prk_ajax_container .event-details-right {
-        width: 43%;
-        padding-left: 1%;
-        padding-right: 0px;
-    }
 }
 
 /* Medium Devices, Desktops */
@@ -68,14 +65,14 @@
 
 #project-map, #event-map {
     height: 450px;
-    width: 100%;
+    width: 350px;
 }
 
 .project-thumbnail-image, .event-thumbnail-image {
-    width: 100%;
+    width: 350px;
 }
 
-.event div, .project div {
+div.event, div.project {
     float: left;
 }
 
