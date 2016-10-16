@@ -28,6 +28,7 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
                     <?php
                     if (!empty($e->properties->evolution)) {
                         ?>
+                    <div class="clear"></div>
                     <div class="event-evolution">
                         <span><?php echo $e->properties->evolution->name; ?></span>
                     </div>
@@ -38,7 +39,6 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
 
                 <div class="entry-content">
                     <div id="event-details" class="container">
-                        <div class="row">
                             <!-- LEFT Column -->
                             <div class="event-details-left">
                                 <?php
@@ -245,7 +245,6 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
 
                                 </script>
                             </div>
-                        </div>
                     </div>
                 </div><!-- .entry-content -->
 

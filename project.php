@@ -24,6 +24,7 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
                 <?php
                 if (!empty($p->properties->evolution)) {
                     ?>
+                    <div class="clear"></div>
                     <div class="project-evolution">
                         <span><?php echo $p->properties->evolution->name; ?></span>
                     </div>
@@ -34,7 +35,6 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
 
             <div class="entry-content">
                 <div id="project-details" class="container">
-                    <div class="row">
                         <!-- LEFT Column -->
                         <div class="project-details-left">
                             <?php
@@ -255,7 +255,6 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
 
                             </script>
                         </div>
-                    </div>
                 </div>
             </div><!-- .entry-content -->
 
