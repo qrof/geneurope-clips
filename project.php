@@ -4,7 +4,7 @@
  *
  */
 
-get_header(); ?>
+get_header('default'); ?>
 
 <?php
 $p = WP_CLIPS_Plugin::get_project_fromurl();
@@ -272,4 +272,4 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
     </main><!-- .site-main -->
 </div><!-- .content-area -->
 
-<?php get_footer(); ?>
+<?php get_footer('default'); ?>

@@ -4,7 +4,7 @@
  *
  */
 
-get_header(); ?>
+get_header('default'); ?>
 
 <?php
 $e = WP_CLIPS_Plugin::get_event_fromurl();
@@ -262,4 +262,4 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
     </main><!-- .site-main -->
 </div><!-- .content-area -->
 
-<?php get_footer(); ?>
+<?php get_footer('deafult'); ?>
