@@ -10,6 +10,19 @@ Author URI: http://clips.gen-europe.org
 License: GPL2
 */
 
+/*
+|--------------------------------------------------------------------------
+| CONSTANTS
+|--------------------------------------------------------------------------
+*/
+
+if ( ! defined( 'CLIPS_BASE_FILE' ) )
+    define( 'CLIPS_BASE_FILE', __FILE__ );
+if ( ! defined( 'CLIPS_BASE_DIR' ) )
+    define( 'CLIPS_BASE_DIR', dirname( CLIPS_BASE_FILE ) );
+if ( ! defined( 'CLIPS_PLUGIN_URL' ) )
+    define( 'CLIPS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+
 if(!class_exists('WP_CLIPS_Plugin'))
 {
     class WP_CLIPS_Plugin
