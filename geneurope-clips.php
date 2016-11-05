@@ -4,9 +4,9 @@
 Plugin Name: GEN Europe CLIPS Wordpress plugin
 Plugin URI: http://URI_Of_Page_Describing_Plugin_and_Updates
 Description: Get Projects, Events from the FLOW database through an API and display it on the website.
-Version: 1.1
+Version: 1.3
 Author: marko kroflic
-Author URI: http://www.mkr.si
+Author URI: http://clips.gen-europe.org
 License: GPL2
 */
 
