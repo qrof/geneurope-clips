@@ -1,19 +1,11 @@
 === GEN Europe CLIPS Wordpress plugin ===
-
 Contributors: qrof
-
 Donate link: http://clips.gen-europe.org/
-
 Tags: projects, events, gen-europe
-
 Requires at least: 3.0.1
-
 Tested up to: 4.6
-
-Stable tag: 1.4
-
+Stable tag: 1.4.1
 License: GPLv2 or later
-
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Display Projects, Events from the FLOW database through an API and display it on the website. Display resources from a remote WebDAV server.
@@ -115,3 +107,9 @@ fixed some css styling
 added 'default' name to all header and footer references in templates
 
 changed GEN Europe contact email for API access
+
+= 1.4.1 =
+
+reverted header and footer references to ()
+
+added static variables for dirs CLIPS_BASE_FILE, CLIPS_BASE_DIR, CLIPS_PLUGIN_URL
