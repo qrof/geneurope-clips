@@ -12,7 +12,7 @@ if (isset($pathinfo['extension'])) {
 }
 
 
-get_header('default'); ?>
+get_header(); ?>
 ?>
 <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
@@ -52,4 +52,4 @@ get_header('default'); ?>
     </main><!-- .site-main -->
 </div><!-- .content-area -->
 
-<?php get_footer('default'); ?>
+<?php get_footer(); ?>

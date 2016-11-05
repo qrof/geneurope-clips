@@ -10,7 +10,7 @@ Requires at least: 3.0.1
 
 Tested up to: 4.6
 
-Stable tag: 1.3
+Stable tag: 1.4
 
 License: GPLv2 or later
 
@@ -86,7 +86,7 @@ Use CSS overrides to override styles set in css/style.css
 
 = Caching =
 
-Default caching for resources uses Wordpress Transient API and is set to 15 minutes.
+Default caching for resources uses Wordpress Transient API and is set to 60 minutes.
 
 = What about foo bar? =
 
