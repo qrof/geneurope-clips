@@ -86,12 +86,24 @@ That is the dillemma!
 
 == Screenshots ==
 
-1. This screen shot description corresponds to screenshot-1.(png|jpg|jpeg|gif). Note that the screenshot is taken from
-the /assets directory or the directory that contains the stable readme.txt (tags or trunk). Screenshots in the /assets
-directory take precedence. For example, `/assets/screenshot-1.png` would win over `/tags/4.3/screenshot-1.png`
-(or jpg, jpeg, gif).
-2. This is the second screen shot
+1. Projects map example
+2. Projects list example
+3. Events map example
+4. Events list example
+5. Resources list
 
 == Changelog ==
 
 = 1.0 =
+
+first release
+
+= 1.1 =
+
+fixed some css styling
+
+= 1.2 =
+
+added 'default' name to all header and footer references in templates
+
+changed GEN Europe contact email for API access
