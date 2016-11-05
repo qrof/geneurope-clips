@@ -1,7 +1,7 @@
 === GEN Europe CLIPS Wordpress plugin ===
 Contributors: qrof
 Donate link: http://clips.gen-europe.org/
-Tags: comments, spam
+Tags: projects, events, gen-europe
 Requires at least: 3.0.1
 Tested up to: 4.6
 Stable tag: 1.2

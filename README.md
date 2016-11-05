@@ -4,7 +4,7 @@ Contributors: qrof
 
 Donate link: http://clips.gen-europe.org/
 
-Tags: comments, spam
+Tags: projects, events, gen-europe
 
 Requires at least: 3.0.1
 
