@@ -45,7 +45,7 @@ if(!class_exists('WP_CLIPS_Settings')) {
             ?>
             <div class="wrap">
                 <h2>CLIPS Settings</h2>
-                <p>For API access URL, please contact GEN Europe at info@gen-europe.org.</p>
+                <p>For API access URL, please contact GEN Europe at ralf@gen-europe.org.</p>
                 <p>To use Mapbox tiles instead of OpenStreeMap, please register at <a href="http://www.mapbox.com"
                                                                                       target="_blank">www.mapbox.com</a>,
                     visit the Studio area to get the Mapbox Access token and paste it into the field below.</p>
