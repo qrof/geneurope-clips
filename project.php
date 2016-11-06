@@ -260,6 +260,10 @@ $p = WP_CLIPS_Plugin::get_project_fromurl();
 
         </article><!-- #post-## -->
 
+        <?php
+        }
+        ?>
+
     </main><!-- .site-main -->
 </div><!-- .content-area -->
 

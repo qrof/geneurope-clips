@@ -250,6 +250,10 @@ $e = WP_CLIPS_Plugin::get_event_fromurl();
 
             </article><!-- #post-## -->
 
+            <?php
+        }
+        ?>
+
     </main><!-- .site-main -->
 </div><!-- .content-area -->
 
