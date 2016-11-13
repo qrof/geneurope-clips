@@ -13,7 +13,7 @@ if (isset($pathinfo['extension'])) {
 
 
 get_header(); ?>
-?>
+
 <div id="primary" class="content-area">
     <main id="main" class="site-main" role="main">
         <article id="post-<?php echo $pathinfo['basename']; ?>" <?php post_class("resource prk_inner_block twelve columns centered", null); ?>>
